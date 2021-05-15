@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="img/favicon.ico">
-        <title>TITULO</title>
+        <title>Aproximación a Contenedores</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/font-awesome.min.css" rel="stylesheet">
         <link href="css/base.css" rel="stylesheet">
@@ -23,10 +23,23 @@
     <body class="homepage">
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href=".">TITULO</a>
+                <a class="navbar-brand" href=".">Aproximación a Contenedores</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
                 <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Tutorial</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="prueba/" class="nav-link">Prueba</a>
+                            </li>
+                        </ul>
 
                     <ul class="nav navbar-nav ml-auto">
                         <li class="nav-item">
@@ -34,6 +47,16 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="prueba/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>
@@ -55,14 +78,6 @@
             <li class="nav-item" data-level="1"><a href="#creacion-de-un-contenedor-en-go" class="nav-link">Creación de un contenedor en Go</a>
               <ul class="nav flex-column">
             <li class="nav-item" data-level="2"><a href="#paso-1-creacion-del-codigo-base" class="nav-link">Paso 1: Creación del código base</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#commands" class="nav-link">Commands</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-level="2"><a href="#project-layout" class="nav-link">Project layout</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -127,22 +142,7 @@ func run() {
 
 
 >También podemos ejecutar otros comandos dentro del contenedor, como `go run contenedor.go run /bin/bash`, en cuyo caso se abrirá una nueva terminal.
-</details>
-
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands</h2>
-<ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs -h</code> - Print help message and exit.</li>
-</ul>
-<h2 id="project-layout">Project layout</h2>
-<pre><code>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
-</code></pre></div>
+</details></div>
             </div>
         </div>
 
@@ -226,5 +226,5 @@ docs/
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2021-05-15 14:09:57.202936+00:00
+Build Date UTC : 2021-05-15 14:29:57.398801+00:00
 -->
