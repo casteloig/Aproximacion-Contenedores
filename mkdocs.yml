@@ -1,5 +1,7 @@
-site_name: Aproximación a Contenedores
+site_name: CONTENEDORES
 nav:
     - Tutorial: index.md
     - Prueba: prueba.md
 theme: flatly
+markdown_extensions:
+    - admonition
