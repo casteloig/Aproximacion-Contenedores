@@ -1,4 +1,5 @@
-site_name: TITULO
+site_name: Aproximación a Contenedores
 nav:
-    - Tutorial Go: index.md
+    - Tutorial: index.md
+    - Prueba: prueba.md
 theme: flatly
