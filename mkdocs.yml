@@ -1,4 +1,4 @@
 site_name: TITULO
 nav:
-    - Contextualización: index.md
+    - Tutorial Go: index.md
 theme: flatly
