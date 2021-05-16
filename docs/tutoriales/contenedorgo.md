@@ -1,6 +1,6 @@
 # Tutorial ontenedor en Go
 
-!!! warning
+!!! warning "CUIDADO"
     Es muy recomendable utilizar una MV para realizar los siguientes pasos ya que pueden provocar problemas en el sistema si no se realizan correctamente.
 
 Nuestro objetivo es que, al acabar este tutorial, tengamos un programa que sea capaz de crear un proceso y aislarlo con _namespaces_ y _cgroups_. De hecho, intentaremos que la interacción con éste sea muy parecida a la que tendríamos cuando ejecutamos un contenedor Docker:
@@ -11,7 +11,7 @@ root@bar:~$ go     run contenedor.go run         <command> <args>
     # Una ejecución en Docker sería algo de este estilo:
 root@bar:~$ docker                   run <image> <command> <args>
 ```
-!!! note ""
+!!! info ""
     Cabe destacar que es necesario que **todos los ficheros estén en una carpeta cuyo grupo y usuario pertenezcan a root**, así como realizar todos los comandos con privilegios de root.
 
 ## Paso 1: Creación del código base
@@ -48,15 +48,12 @@ func run() {
 
 Ahora puedes probar a ejecutar la instrucción `go run contenedor.go run ps a` y comprobar que se existen dos procesos: el **contenedor.go** y el **ps a** que le hemos indicado que ejecute dentro del "pre-contenedor".
 
-<details>
-<summary>Explicación</summary>
+??? info "Explicación"
 
-La función `run` simplemente imprime por pantalla información útil sobre el proceso que estamos ejecutando y que, más adelante, creará el contenedor. De momento, lo único que estamos haciendo es indicarle que queremos ejecutar un comando con la función `Command` del paquete [`exec`](https://golang.org/pkg/os/exec/) indicándole los argumentos. Este comando devuelve una estructura del tipo `Cmd` en la que tenemos que especificarle el _Stdin_ _Stdout_ y _Stderr_.
+    La función `run` simplemente imprime por pantalla información útil sobre el proceso que estamos ejecutando y que, más adelante, creará el contenedor. De momento, lo único que estamos haciendo es indicarle que queremos ejecutar un comando con la función `Command` del paquete [`exec`](https://golang.org/pkg/os/exec/) indicándole los argumentos. Este comando devuelve una estructura del tipo `Cmd` en la que tenemos que especificarle el _Stdin_ _Stdout_ y _Stderr_.
 
-También podemos ejecutar otros comandos dentro del contenedor, como `go run contenedor.go run /bin/bash`, en cuyo caso se abrirá una nueva terminal.
-</details>
+    También podemos ejecutar otros comandos dentro del contenedor, como `go run contenedor.go run /bin/bash`, en cuyo caso se abrirá una nueva terminal.
 
-</br>
 
 ## Paso 2: Aislando con Namespace UTS (Hostname)
 Este _namespace_ permite cambiar tanto el _hostname_ como el _domain-name_ del contenedor sin que afecte a estos campos del host.
@@ -71,46 +68,42 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 
 Con estos cambios lograremos que ,al iniciar el contenedor con `go run contenedor.go run /bin/bash`, **podamos cambiar los el _hostname_ dentro del contenedor** y que, al salir del contenedor (saliendo del bash con un `exit`) no haya cambiado en el host.
 
-<details>
-<summary>Código completo hasta ahora.</summary>
+??? abstract "Código completo hasta ahora"
 
-```go
-package main
+    ```go
+    package main
 
-import (
-    "fmt"
-    "os"
-    "os/exec"
-    "syscall"
-)
+    import (
+        "fmt"
+        "os"
+       "os/exec"
+       "syscall"
+    )
 
-func main() {
-    switch os.Args[1] {
-        case "run":
-            run()
-        default:
-            panic("¿Argumento Invalido?")
-    }
-}
-
-func run() {
-    fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
-
-    cmd := exec.Command(os.Args[2], os.Args[3:]...)
-    cmd.Stdin = os.Stdin
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
-
-    cmd.SysProcAttr = &syscall.SysProcAttr{
-        Cloneflags: syscall.CLONE_NEWUTS,
+    func main() {
+        switch os.Args[1] {
+            case "run":
+               run()
+           default:
+                panic("¿Argumento Invalido?")
+        }
     }
 
-    cmd.Run()
-}
-```
-</details>
+    func run() {
+        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-</br>
+        cmd := exec.Command(os.Args[2], os.Args[3:]...)
+        cmd.Stdin = os.Stdin
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+
+        cmd.SysProcAttr = &syscall.SysProcAttr{
+            Cloneflags: syscall.CLONE_NEWUTS,
+        }
+
+        cmd.Run()
+    }
+    ```
 
 ## Paso 3: Aislando con Namespace USER (username)
 Con la inclusión de este _namespace_ vamos a **separar las tablas de UID y GID entre el host y el contenedor**, de tal forma que dentro del contenedor no haya los mismos usuarios que fuera.
@@ -156,60 +149,57 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 }
 ```
 
-<details>
-<summary>Código completo hasta ahora.</summary>
+??? abstract "Código completo hasta ahora"
 
-```go
-package main
+    ```go
+    package main
 
-import (
-    "fmt"
-    "os"
-    "os/exec"
-    "syscall"
-)
+    import (
+        "fmt"
+        "os"
+        "os/exec"
+        "syscall"
+    )
 
-func main() {
-    switch os.Args[1] {
-        case "run":
-            run()
-        default:
-            panic("¿Argumento Invalido?")
+    func main() {
+        switch os.Args[1] {
+            case "run":
+                run()
+            default:
+                panic("¿Argumento Invalido?")
+        }
     }
-}
 
-func run() {
-    fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
+    func run() {
+        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-    cmd := exec.Command(os.Args[2], os.Args[3:]...)
-    cmd.Stdin = os.Stdin
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
+        cmd := exec.Command(os.Args[2], os.Args[3:]...)
+        cmd.Stdin = os.Stdin
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
 
-    cmd.SysProcAttr = &syscall.SysProcAttr{
-        Cloneflags: syscall.CLONE_NEWUTS  |
-                    syscall.CLONE_NEWUSER,
-        UidMappings: []syscall.SysProcIDMap{
-            {
-                ContainerID: 0,             // UID dentro del container
-                HostID: os.Getuid(),        // UID en el host
-                Size: 1,                    // Quiero mapear solo unuser
+        cmd.SysProcAttr = &syscall.SysProcAttr{
+            Cloneflags: syscall.CLONE_NEWUTS  |
+                        syscall.CLONE_NEWUSER,
+            UidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,             // UID dentro del container
+                    HostID: os.Getuid(),        // UID en el host
+                    Size: 1,                    // Quiero mapear solo unuser
+                },
             },
-        },
-        GidMappings: []syscall.SysProcIDMap{
-            {
-                ContainerID: 0,
-                HostID: os.Getpid(),
-                Size: 1,
+            GidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,
+                    HostID: os.Getpid(),
+                    Size: 1,
+                },
             },
-        },
+        }
+        cmd.Run()
     }
-    cmd.Run()
-}
-```
-</details>
+    ```
 
-</br>
 
 ## Paso 4: Aislando con Namespace NS (Mount)
 Este fue el primer _Namespace_ que se incluyó en el kernel de Linux y uno de los más sencillos: simplemente aisla los puntos de montaje. De tal forma que podemos **esconder los montajes del host en el contenedor y viceversa**.
@@ -228,61 +218,58 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 }
 ```
 
-<details>
-<summary>Código completo hasta ahora.</summary>
+??? abstract "Código completo hasta ahora"
 
-```go
-package main
+    ```go
+    package main
 
-import (
-    "fmt"
-    "os"
-    "os/exec"
-    "syscall"
-)
+    import (
+        "fmt"
+        "os"
+        "os/exec"
+        "syscall"
+    )
 
-func main() {
-    switch os.Args[1] {
-        case "run":
-            run()
-        default:
-            panic("¿Argumento Invalido?")
+    func main() {
+        switch os.Args[1] {
+            case "run":
+                run()
+            default:
+                panic("¿Argumento Invalido?")
+        }
     }
-}
 
-func run() {
-    fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
+    func run() {
+        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-    cmd := exec.Command(os.Args[2], os.Args[3:]...)
-    cmd.Stdin = os.Stdin
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
+        cmd := exec.Command(os.Args[2], os.Args[3:]...)
+        cmd.Stdin = os.Stdin
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
 
-    cmd.SysProcAttr = &syscall.SysProcAttr{
-        Cloneflags: syscall.CLONE_NEWUTS |
-                    syscall.CLONE_
-                    syscall.CLONE_NEWUSER,
-        UidMappings: []syscall.SysProcIDMap{
-            {
-                ContainerID: 0,             // UID dentro del container
-                HostID: os.Getuid(),        // UID en el host
-                Size: 1,                    // Quiero mapear solo unuser
+        cmd.SysProcAttr = &syscall.SysProcAttr{
+            Cloneflags: syscall.CLONE_NEWUTS |
+                        syscall.CLONE_
+                        syscall.CLONE_NEWUSER,
+            UidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,             // UID dentro del container
+                    HostID: os.Getuid(),        // UID en el host
+                    Size: 1,                    // Quiero mapear solo unuser
+                },
             },
-        },
-        GidMappings: []syscall.SysProcIDMap{
-            {
-                ContainerID: 0,
-                HostID: os.Getpid(),
-                Size: 1,
+            GidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,
+                    HostID: os.Getpid(),
+                    Size: 1,
+                },
             },
-        },
+        }
+        cmd.Run()
     }
-    cmd.Run()
-}
-```
-</details>
+    ```
 
-</br>
 
 ## Paso 5: Aislando con Namespace PID
 El PID _namespace_ permite separar los árboles de procesos, de tal forma que dentro del **contenedor no se pueden ver los procesos del host**.
@@ -300,13 +287,10 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 
 Sin embargo, cuando ejecutamos un `ps a` seguimos pudiendo ver los mismos procesos de antes.
 
-<details>
-<summary>Explicación: Mount Namespace no aísla los procesos.</summary>
+??? info "Explicación: Mount Namespace no aísla los procesos".</summary>"
 
-Es importante saber que **_/proc_** es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un **_ps a_**, lo que está pasando realmente es que esta instrucción consulta los datos del directorio anteriormente nombrado.
-</details>
+    Es importante saber que **_/proc_** es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un **_ps a_**, lo que está pasando realmente es que esta instrucción consulta los datos del directorio anteriormente nombrado.
 
-</br>
 
 La solución es asignar un nuevo **_/proc_** en la raíz del contenedor. Para ello necesitamos un nuevo _root filesystem_ como Alpine (que continene únicamente los archivos necesarios para que funcione un contenedor).
 
@@ -316,13 +300,10 @@ Para realizar este paso necesitamos descargar el [mini-root](https://alpinelinux
 ### Montamos nuestro propio /proc
 Necesitamos un nuevo directorio **_proc_** para que el comando `ps a` pueda acceder a él para acceder a la información de los procesos del contnedor.
 
-<details>
-<summary>Explicación: directorio /proc</summary>
+??? info "Explicación: directorio /proc"
 
-Otra cosa que se podría intuir es que es necesario añadir el _Namespace NS (de Mount)_ para aislar ambos directorios. Pero no, este último comentario es falso pese a que existan muchas referencias en la red a que es completamente necesario: cuando un proceso como `ps` quiere comprobar los procesos activos en `/proc` lo que hace es ir directamente a ese archivo. Nuestro proceso, tanto con el _Namespace NS_ como sin él, va a seguir mirando los procesos en la carpeta `/proc`, es decir, la que está justo debajo del directorio raíz y no en la del nuevo _root filesystem_ de alpine. Así que podríamos montar nuestro nuevo `proc/` sin el _Namespace NS_.
-</details>
+    Otra cosa que se podría intuir es que es necesario añadir el _Namespace NS (de Mount)_ para aislar ambos directorios. Pero no, este último comentario es falso pese a que existan muchas referencias en la red a que es completamente necesario: cuando un proceso como `ps` quiere comprobar los procesos activos en `/proc` lo que hace es ir directamente a ese archivo. Nuestro proceso, tanto con el _Namespace NS_ como sin él, va a seguir mirando los procesos en la carpeta `/proc`, es decir, la que está justo debajo del directorio raíz y no en la del nuevo _root filesystem_ de alpine. Así que podríamos montar nuestro nuevo `proc/` sin el _Namespace NS_.
 
-</br>
 
 La solución de que se muestren únicamente los procesos activos de nuestro contenedor se divide en dos pasos, pero antes, debemos cambiar un poco la forma en la que habíamos planteado el programa en un principio.
 
@@ -361,185 +342,175 @@ func child() {
 }
 ```
 
-<details>
-<summary>Explicación: ¿por qué crear una nueva función?</summary>
+??? info "Explicación: ¿por qué crear una nueva función?"
 
-Ahora no sólo vamos a añadir _namespaces_ y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función `run` y realizamos las nuevas acciones después de `cmd.Run()` no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de `cmd.Run()` no se estarían creando aún los _namespaces_: es justo en mientras transcurre en `cmd.Run()` cuando queremos modificar el contenedor.
+    Ahora no sólo vamos a añadir _namespaces_ y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función `run` y realizamos las nuevas acciones después de `cmd.Run()` no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de `cmd.Run()` no se estarían creando aún los _namespaces_: es justo en mientras transcurre en `cmd.Run()` cuando queremos modificar el contenedor.
 
-Por eso una opción es obligar al proceso a llamarse a una copia de sí mismo y cambiar el flujo del programa a la nueva función `child`.
+    Por eso una opción es obligar al proceso a llamarse a una copia de sí mismo y cambiar el flujo del programa a la nueva función `child`.
 
-Cabe destacar que el _filesystem_ propuesto de Alpine no cuenta con Bash, así que tendríamos que mandar ejecutar `/bin/sh`
+    Cabe destacar que el _filesystem_ propuesto de Alpine no cuenta con Bash, así que tendríamos que mandar ejecutar `/bin/sh`
 
-Por otro lado, es recomendable que a partir de ahora empezemos a manejar los errores que nos puedan aparecer:
+    Por otro lado, es recomendable que a partir de ahora empezemos a manejar los errores que nos puedan aparecer:
 
-```go
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-```
-</details>
-
-</br>
-
-
-<details>
-<summary>Código completo hasta ahora</summary>
-
-```go
-package main
-
-import (
-        "fmt"
-        "os"
-        "os/exec"
-        "syscall"
-)
-
-
-func main() {
-    switch os.Args[1] {
-        case "run":
-            run()
-        case "child":
-            child()
-        default:
-            panic("¿Argumento Invalido?")
-    }
-}
-
-func run() {
-        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
-
-        cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
-        cmd.Stdin = os.Stdin
-        cmd.Stdout= os.Stdout
-        cmd.Stderr = os.Stderr
-
-        cmd.SysProcAttr = &syscall.SysProcAttr{
-                Cloneflags: syscall.CLONE_NEWUTS  |
-                            syscall.CLONE_NEWUSER |
-                            syscall.CLONE_NEWNS   |
-                            syscall.CLONE_NEWPID,
-                UidMappings: []syscall.SysProcIDMap{
-                        {
-                                ContainerID: 0,
-                                HostID: os.Getuid(),
-                                Size: 1,
-                        },
-                },
-                GidMappings: []syscall.SysProcIDMap{
-                        {
-                                ContainerID: 0,
-                                HostID: os.Getgid(),
-                                Size: 1,
-                        },
-                },
-        }
-
-        must(cmd.Run())
-}
-
-func child() {
-        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
-
-        must(syscall.Sethostname([]byte("container")))
-
-        must(syscall.Chroot("alpinefs/"))
-        must(os.Chdir("/"))
-        must(syscall.Mount("proc", "proc", "proc", 0, ""))
-
-        cmd := exec.Command(os.Args[2], os.Args[3:]...)
-        cmd.Stdin = os.Stdin
-        cmd.Stdout = os.Stdout
-        cmd.Stderr = os.Stderr
-
-        defer func() {
-                must(syscall.Unmount("proc", 0))
-        }()
-
-        must(cmd.Run())
-}
-
-
-func must(err error) {
+    ```go
+    func must(err error) {
         if err != nil {
-                panic(err)
+            panic(err)
         }
-}
+    }
+    ```
 
-```
-</details>
 
-</br>
 
-<details>
-<summary>¿QUÉ HEMOS CONSEGUIDO HASTA AHORA?</summary>
+??? abstract "Código completo hasta ahora"
 
-En estos momentos hemos conseguido introducir unos cuantos _namespaces_, al menos los más significativos para realizar en este tutorial.
+    ```go
+    package main
 
-El <b>hostname namespace</b> se puede comprobar de esta forma:
+    import (
+            "fmt"
+            "os"
+            "os/exec"
+            "syscall"
+    )
 
-```console
-    # Fuera del contenedor
-root@bar:~$ hostname
-host
-root@bar:~$ go run contenedor.go run /bin/sh
-Corriendo '[/bin/sh]' con User ID 0 en PID 72724
 
-    # Dentro del contenedor
-root@bar:~$ sethostname contenedor
-root@bar:~$ exit
+    func main() {
+        switch os.Args[1] {
+            case "run":
+                run()
+            case "child":
+                child()
+            default:
+                panic("¿Argumento Invalido?")
+        }
+    }
 
-    # Fuera del contenedor
-root@bar:~$ hostname
-host
-```
+    func run() {
+            fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-El <b>user namespace</b> lo hemos conseguido introducir añadiendo los mapeos de usuario a root dentro del contenedor. Lo podemos comprobar de esta forma:
+            cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
+            cmd.Stdin = os.Stdin
+            cmd.Stdout= os.Stdout
+            cmd.Stderr = os.Stderr
 
-```console
-    # Fuera del contenedor
-root@bar:~$ go run contenedor.go run /bin/sh
-Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+            cmd.SysProcAttr = &syscall.SysProcAttr{
+                    Cloneflags: syscall.CLONE_NEWUTS  |
+                                syscall.CLONE_NEWUSER |
+                                syscall.CLONE_NEWNS   |
+                                syscall.CLONE_NEWPID,
+                    UidMappings: []syscall.SysProcIDMap{
+                            {
+                                    ContainerID: 0,
+                                    HostID: os.Getuid(),
+                                    Size: 1,
+                            },
+                    },
+                    GidMappings: []syscall.SysProcIDMap{
+                            {
+                                    ContainerID: 0,
+                                    HostID: os.Getgid(),
+                                    Size: 1,
+                            },
+                    },
+            }
 
-    # Dentro del contenedor
-root@bar:~$ id
-uid=0(root) gid=0(root) groups=0(root)
-```
+            must(cmd.Run())
+    }
 
-El <b>mount namespace</b> se puede comprobar de una forma muy sencilla:
+    func child() {
+            fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-```console
-    # Fuera del contenedor
-root@bar:~$ mount
-###### Aparecen muchos puntos de montaje usados por el host
-root@bar:~$ go run contenedor.go run /bin/sh
-Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+            must(syscall.Sethostname([]byte("container")))
 
-    # Dentro del contenedor
-root@bar:~$ mount
-proc on /proc type proc (rw,relatime)
-```
+            must(syscall.Chroot("alpinefs/"))
+            must(os.Chdir("/"))
+            must(syscall.Mount("proc", "proc", "proc", 0, ""))
 
-El <b>pid namespace</b> lo podemos comprobar realizando las siguientes instrucciones:
+            cmd := exec.Command(os.Args[2], os.Args[3:]...)
+            cmd.Stdin = os.Stdin
+            cmd.Stdout = os.Stdout
+            cmd.Stderr = os.Stderr
 
-```console
-    # Fuera del contenedor
-root@bar:~$ go run contenedor.go run /bin/sh
-Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+            defer func() {
+                    must(syscall.Unmount("proc", 0))
+            }()
 
-    # Dentro del contenedor
-root@bar:~$ ps a
-PID     USER    TIME   COMMAND
-    1   root     0:00  /proc/self/exe child /bin/sh
-    5   root     0:00  /bin/sh
-   11   root     0:00  ps a
-```
-</details>
+            must(cmd.Run())
+    }
 
-</br>
+
+    func must(err error) {
+            if err != nil {
+                    panic(err)
+            }
+    }
+    ```
+
+
+??? info "¿QUÉ HEMOS CONSEGUIDO HASTA AHORA?"
+
+    En estos momentos hemos conseguido introducir unos cuantos _namespaces_, al menos los más significativos para realizar en este tutorial.
+
+    El <b>hostname namespace</b> se puede comprobar de esta forma:
+
+    ```console
+        # Fuera del contenedor
+    root@bar:~$ hostname
+    host
+    root@bar:~$ go run contenedor.go run /bin/sh
+    Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+
+        # Dentro del contenedor
+    root@bar:~$ sethostname contenedor
+    root@bar:~$ exit
+
+        # Fuera del contenedor
+    root@bar:~$ hostname
+    host
+    ```
+
+    El <b>user namespace</b> lo hemos conseguido introducir añadiendo los mapeos de usuario a root dentro del contenedor. Lo podemos comprobar de esta forma:
+
+    ```console
+        # Fuera del contenedor
+    root@bar:~$ go run contenedor.go run /bin/sh
+    Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+
+        # Dentro del contenedor
+    root@bar:~$ id
+    uid=0(root) gid=0(root) groups=0(root)
+    ```
+
+    El <b>mount namespace</b> se puede comprobar de una forma muy sencilla:
+
+    ```console
+        # Fuera del contenedor
+    root@bar:~$ mount
+    ###### Aparecen muchos puntos de montaje usados por el host
+    root@bar:~$ go run contenedor.go run /bin/sh
+    Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+
+        # Dentro del contenedor
+    root@bar:~$ mount
+    proc on /proc type proc (rw,relatime)
+    ```
+
+    El <b>pid namespace</b> lo podemos comprobar realizando las siguientes instrucciones:
+
+    ```console
+        # Fuera del contenedor
+    root@bar:~$ go run contenedor.go run /bin/sh
+    Corriendo '[/bin/sh]' con User ID 0 en PID 72724
+
+        # Dentro del contenedor
+    root@bar:~$ ps a
+    PID     USER    TIME   COMMAND
+        1   root     0:00  /proc/self/exe child /bin/sh
+        5   root     0:00  /bin/sh
+    11   root     0:00  ps a
+    ```
+
 
 ## Añadiendo Cgroups (memoria y PID)
 
@@ -587,129 +558,127 @@ Lo que hay que saber para poder usar `pivot_root` es que necesita dos argumentos
 
 El código completo del tutorial quedaría así:
 
-<details>
-<summary><b>CÓDIGO COMPLETO</b></summary>
+??? abstract "CÓDIGO COMPLETO"
 
-```go
-package main
+    ```go
+    package main
 
-import (
-	"fmt"
-	"os"
-	"os/exec"
-	"syscall"
-	"io/ioutil"
-	"strconv"
-	"path/filepath"
-)
-
-
-func main() {
-	switch os.Args[1] {
-	case "run":
-		run()
-	case "child":
-		child()
-	default:
-		panic("¿Argumento Invalido?")
-	}
-}
+    import (
+        "fmt"
+        "os"
+        "os/exec"
+        "syscall"
+        "io/ioutil"
+        "strconv"
+        "path/filepath"
+    )
 
 
-func run() {
-	fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
-
-	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout= os.Stdout
-	cmd.Stderr = os.Stderr
-
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS  |
-			    syscall.CLONE_NEWUSER |
-			    syscall.CLONE_NEWNS   |
-			    syscall.CLONE_NEWPID,
-		UidMappings: []syscall.SysProcIDMap{
-			{
-				ContainerID: 0,
-				HostID: os.Getuid(),
-				Size: 1,
-			},
-		},
-		GidMappings: []syscall.SysProcIDMap{
-			{
-				ContainerID: 0,
-				HostID: os.Getgid(),
-				Size: 1,
-			},
-		},
-	}
-
-	must(cmd.Run())
-}
+    func main() {
+        switch os.Args[1] {
+        case "run":
+            run()
+        case "child":
+            child()
+        default:
+            panic("¿Argumento Invalido?")
+        }
+    }
 
 
+    func run() {
+        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
 
-func child() {
-	fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
+        cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
+        cmd.Stdin = os.Stdin
+        cmd.Stdout= os.Stdout
+        cmd.Stderr = os.Stderr
 
-	cg()
+        cmd.SysProcAttr = &syscall.SysProcAttr{
+            Cloneflags: syscall.CLONE_NEWUTS  |
+                    syscall.CLONE_NEWUSER |
+                    syscall.CLONE_NEWNS   |
+                    syscall.CLONE_NEWPID,
+            UidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,
+                    HostID: os.Getuid(),
+                    Size: 1,
+                },
+            },
+            GidMappings: []syscall.SysProcIDMap{
+                {
+                    ContainerID: 0,
+                    HostID: os.Getgid(),
+                    Size: 1,
+                },
+            },
+        }
 
-	must(syscall.Sethostname([]byte("container")))
-
-	pivot()
-	must(syscall.Mount("proc", "proc", "proc", 0, ""))
-
-	cmd := exec.Command(os.Args[2], os.Args[3:]...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	must(syscall.Unmount(".old_root", syscall.MNT_DETACH))
-	must(os.Remove(".old_root"))
-
-	defer func() {
-		must(syscall.Unmount("proc", 0))
-	}()
+        must(cmd.Run())
+    }
 
 
-	must(cmd.Run())
-}
+
+    func child() {
+        fmt.Printf("Corriendo '%v' con User ID %d en PID %d \n", os.Args[2:], os.Getuid(), os.Getpid())
+
+        cg()
+
+        must(syscall.Sethostname([]byte("container")))
+
+        pivot()
+        must(syscall.Mount("proc", "proc", "proc", 0, ""))
+
+        cmd := exec.Command(os.Args[2], os.Args[3:]...)
+        cmd.Stdin = os.Stdin
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+
+        must(syscall.Unmount(".old_root", syscall.MNT_DETACH))
+        must(os.Remove(".old_root"))
+
+        defer func() {
+            must(syscall.Unmount("proc", 0))
+        }()
 
 
-func cg() {
-	cgroups := "/sys/fs/cgroup"
+        must(cmd.Run())
+    }
 
-	pids := filepath.Join(cgroups, "pids/demo")
-	if _, err := os.Stat(pids); os.IsNotExist(err) {
-		must(os.Mkdir(pids, 0755))
-	}
 
-	memory := filepath.Join(cgroups, "memory/demo")
-	if _, err := os.Stat(memory); os.IsNotExist(err) {
-		must(os.Mkdir(memory, 0755))
-	}
-    
-	must(ioutil.WriteFile(filepath.Join(pids, "pids.max"), []byte("22"), 0700))
-	must(ioutil.WriteFile(filepath.Join(pids, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+    func cg() {
+        cgroups := "/sys/fs/cgroup"
 
-	must(ioutil.WriteFile(filepath.Join(memory, "memory.limit_in_bytes"), []byte("2M"), 0700))
-	must(ioutil.WriteFile(filepath.Join(memory, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
-}
+        pids := filepath.Join(cgroups, "pids/demo")
+        if _, err := os.Stat(pids); os.IsNotExist(err) {
+            must(os.Mkdir(pids, 0755))
+        }
 
-func pivot() {
-	must(syscall.Mount("alpinefs", "alpinefs", "", syscall.MS_BIND|syscall.MS_REC, ""))
-	if _, err := os.Stat("alpinefs/.old_root"); os.IsNotExist(err) {
-		must(os.Mkdir("alpinefs/.old_root", 0700))
-	}
-	must(syscall.PivotRoot("alpinefs", "alpinefs/.old_root"))
-	must(os.Chdir("/"))
-}
+        memory := filepath.Join(cgroups, "memory/demo")
+        if _, err := os.Stat(memory); os.IsNotExist(err) {
+            must(os.Mkdir(memory, 0755))
+        }
+        
+        must(ioutil.WriteFile(filepath.Join(pids, "pids.max"), []byte("22"), 0700))
+        must(ioutil.WriteFile(filepath.Join(pids, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
 
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-```
-</details>
+        must(ioutil.WriteFile(filepath.Join(memory, "memory.limit_in_bytes"), []byte("2M"), 0700))
+        must(ioutil.WriteFile(filepath.Join(memory, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+    }
+
+    func pivot() {
+        must(syscall.Mount("alpinefs", "alpinefs", "", syscall.MS_BIND|syscall.MS_REC, ""))
+        if _, err := os.Stat("alpinefs/.old_root"); os.IsNotExist(err) {
+            must(os.Mkdir("alpinefs/.old_root", 0700))
+        }
+        must(syscall.PivotRoot("alpinefs", "alpinefs/.old_root"))
+        must(os.Chdir("/"))
+    }
+
+    func must(err error) {
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```

@@ -1,6 +1,6 @@
 # Contenedor en Bash
 
-!!! warning
+!!! warning "CUIDADO"
     Es muy recomendable utilizar una MV para realizar los siguientes pasos ya que pueden provocar problemas en el sistema si no se realizan correctamente.
 
 ## Namespaces
@@ -22,7 +22,7 @@ root@bar~$ hostname demo
 ```
 
 ## Cgroups
-En el caso de los grupos de control, tiene la misma dificultad que en el ejemplo en Go: simplemente hay que crear los directorios correspondientes para cada tipo de _Cgroup_, eso sí, desde una terminal con root en el Host, ya que tenemos que introducir el PID en los correspondientes `cgroup.procs` del _Namespace USER_ superior (es decir, el que vemos desde el Host). 
+En el caso de los grupos de control, tiene la misma dificultad que en el ejemplo en Go: simplemente hay que crear los directorios correspondientes para cada tipo de _Cgroup_, eso sí, desde una terminal con root en el Host, ya que tenemos que introducir el PID en los correspondientes `cgroup.procs` del _Namespace USER_ superior (es decir, el que vemos desde el host). 
 
 ```go
 root@bar~$ ps aux | grep /sh
