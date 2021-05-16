@@ -307,7 +307,7 @@
                 
                 <h1 id="contenedor-en-bash">Contenedor en Bash</h1>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">CUIDADO</p>
 <p>Es muy recomendable utilizar una MV para realizar los siguientes pasos ya que pueden provocar problemas en el sistema si no se realizan correctamente.</p>
 </div>
 <h2 id="namespaces">Namespaces</h2>
@@ -321,7 +321,7 @@
 <span class="gp">root@bar~$ </span>hostname demo
 </code></pre></div>
 <h2 id="cgroups">Cgroups</h2>
-<p>En el caso de los grupos de control, tiene la misma dificultad que en el ejemplo en Go: simplemente hay que crear los directorios correspondientes para cada tipo de <em>Cgroup</em>, eso sí, desde una terminal con root en el Host, ya que tenemos que introducir el PID en los correspondientes <code>cgroup.procs</code> del <em>Namespace USER</em> superior (es decir, el que vemos desde el Host). </p>
+<p>En el caso de los grupos de control, tiene la misma dificultad que en el ejemplo en Go: simplemente hay que crear los directorios correspondientes para cada tipo de <em>Cgroup</em>, eso sí, desde una terminal con root en el Host, ya que tenemos que introducir el PID en los correspondientes <code>cgroup.procs</code> del <em>Namespace USER</em> superior (es decir, el que vemos desde el host). </p>
 <div class="highlight"><pre><span></span><code><span class="nx">root</span><span class="err">@</span><span class="nx">bar</span><span class="err">~$</span> <span class="nx">ps</span> <span class="nx">aux</span> <span class="p">|</span> <span class="nx">grep</span> <span class="o">/</span><span class="nx">sh</span>
 <span class="nx">root</span>    <span class="mi">2552</span>    <span class="nx">pts</span><span class="o">/</span><span class="mi">0</span>   <span class="mo">00</span><span class="p">:</span><span class="mi">13</span>   <span class="o">/</span><span class="nx">bin</span><span class="o">/</span><span class="nx">sh</span>
 <span class="nx">root</span><span class="err">@</span><span class="nx">bar</span><span class="err">~$</span> <span class="nx">mkdir</span> <span class="o">/</span><span class="nx">sys</span><span class="o">/</span><span class="nx">fs</span><span class="o">/</span><span class="nx">cgroup</span><span class="o">/</span><span class="nx">pids</span><span class="o">/</span><span class="nx">demo</span>
