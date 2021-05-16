@@ -1,7 +1,13 @@
 site_name: CONTENEDORES
 nav:
-    - Tutorial: index.md
-    - Prueba: prueba.md
-theme: flatly
+    - Home: index.md
+    - Tutorial Go: tutoriales/contenedorgo.md
+    - Tutorial Bash: tutoriales/contenedorbash.md
+theme: material
 markdown_extensions:
     - admonition
+    - abbr
+    - pymdownx.snippets
+    - pymdownx.highlight
+    - pymdownx.superfences
+    - pymdownx.tabbed
