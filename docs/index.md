@@ -10,12 +10,14 @@ Existen dos tipos técnicas principales de virtualización:
 !!! note "Definición"
     Un **contenedor** es un límite lógico que se crea dentro de un sistema operativo proporcionado por el aislamiento de recursos hardware.
 
-
     La característica principal es que en esta técnica se utilizan herramientas que proporciona el Linux Kernel (como _cgroups_ y _namespaces_).
 
 ## Diferencia entre MV y contenedores
 
-*****IMAGEN*****
+<figure>
+  <img src="./img/vm_vs_cont.png" width="600" />
+  <figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
+</figure>
 
 * Un contenedor es una forma de **virtualización ligera**. 
 * Normalmente envuelve a un **pequeño grupo de procesos**.
