@@ -12,10 +12,10 @@ root@bar:~$ go     run contenedor.go run         <command> <args>
 root@bar:~$ docker                   run <image> <command> <args>
 ```
 !!! info ""
-    Cabe destacar que es necesario que **todos los ficheros estén en una carpeta cuyo grupo y usuario pertenezcan a root**, así como realizar todos los comandos con privilegios de root.
+    Cabe destacar que es necesario que **todos los ficheros estén en una carpeta cuyo grupo y usuario pertenezca a root**, así como realizar todos los comandos con privilegios de root.
 
 ## Paso 1: Creación del código base
-El primer paso consiste en **escribir las primeras dos funciones**: `main`, que simplemente comprobará que se ha ejecutado el comando correcto en terminal y `run`, que imprimirá en pantalla los datos del proceso y ejecutará otro nuevo.
+El primer paso consiste en **escribir las primeras dos funciones**: `main`, que simplemente comprobará que se ha ejecutado el comando correcto en terminal y `run`, que imprimirá en pantalla los datos del proceso y ejecutará otro nuevo que le indiquemos en parámetro.
 
 ```go
 package main
@@ -66,7 +66,7 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
     }
 ```
 
-Con estos cambios lograremos que ,al iniciar el contenedor con `go run contenedor.go run /bin/bash`, **podamos cambiar los el _hostname_ dentro del contenedor** y que, al salir del contenedor (saliendo del bash con un `exit`) no haya cambiado en el host.
+Con estos cambios lograremos que, al iniciar el contenedor con `go run contenedor.go run /bin/bash`, **podamos cambiar el _hostname_ dentro del contenedor** y que, al salir del mismo (saliendo del bash con un `exit`) no haya cambiado en el host.
 
 ??? abstract "Código completo hasta ahora"
 
@@ -117,7 +117,7 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
         }
 ```
 
-El problema es que ahora mismo, cuando ejecutamos el contenedor, nos informa que el proceso que lo llama tiene UID 0 pero si comprobamos el usuario que se nos asignó en la nueva tabla de UID nos asigna un usuario "aleatorio":
+El problema es que ahora mismo, cuando ejecutamos el contenedor, nos informa que el proceso que lo llama tiene UID 0 pero si comprobamos el usuario que se nos asignó en la nueva tabla de UID (o sea, en la tabla del contenedor) es un usuario "aleatorio":
 
 ```console
 root@bar:~$ go run contenedor.go run /bin/bash
@@ -126,7 +126,7 @@ root@bar:~$ id
 uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
 ```
 
-Así que le vamos a indicar que **mapee el usuario fuera del contenedor (UID 0) con el que queramos dentro**:
+Así que le vamos a indicar que **mapee el usuario de fuera del contenedor (UID 0) con el que queramos dentro**:
 
 ```go
 cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -134,9 +134,9 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
                 syscall.CLONE_NEWUSER,
     UidMappings: []syscall.SysProcIDMap{
         {
-            ContainerID: 0,           // UID dentro del container
+            ContainerID: 0,           // UID dentro del contenedor
             HostID: os.Getuid(),      // UID en el host
-            Size: 1,                  // Quiero mapear solo unuser
+            Size: 1,                  // Quiero mapear solo un usuario
         },
     },
     GidMappings: []syscall.SysProcIDMap{
@@ -202,7 +202,7 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
 
 
 ## Paso 4: Aislando con Namespace NS (Mount)
-Este fue el primer _Namespace_ que se incluyó en el kernel de Linux y uno de los más sencillos: simplemente aisla los puntos de montaje. De tal forma que podemos **esconder los montajes del host en el contenedor y viceversa**.
+Este fue el primer _Namespace_ que se incluyó en el kernel de Linux y uno de los más sencillos: simplemente aisla los puntos de montaje. De esta forma podemos **esconder los _mounts_ entre el host y el contenedor y viceversa**.
 
 Para ver los puntos de montaje usados en cada una de las máquinas con el comando `mount`.
 
@@ -282,14 +282,16 @@ cmd.SysProcAttr = &syscall.SysProcAttr{
                 syscall.CLONE_NEWUSER |
                 syscall.CLONE_NEWNS   |
                 syscall.CLONE_NEWPID,
+
+                {...}
 }
 ```
 
 Sin embargo, cuando ejecutamos un `ps a` seguimos pudiendo ver los mismos procesos de antes.
 
-??? info "Explicación: Mount Namespace no aísla los procesos".</summary>"
+??? info "Explicación: Mount Namespace no aísla los procesos"
 
-    Es importante saber que **_/proc_** es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un **_ps a_**, lo que está pasando realmente es que esta instrucción consulta los datos del directorio anteriormente nombrado.
+    Es importante saber que **_/proc_** es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un **_ps a_**, lo que está pasando realmente es que esta instrucción está consultando los datos del directorio anteriormente nombrado.
 
 
 La solución es asignar un nuevo **_/proc_** en la raíz del contenedor. Para ello necesitamos un nuevo _root filesystem_ como Alpine (que continene únicamente los archivos necesarios para que funcione un contenedor).
@@ -307,7 +309,7 @@ Necesitamos un nuevo directorio **_proc_** para que el comando `ps a` pueda acce
 
 La solución de que se muestren únicamente los procesos activos de nuestro contenedor se divide en dos pasos, pero antes, debemos cambiar un poco la forma en la que habíamos planteado el programa en un principio.
 
-Ahora, en vez de ejecutar desde la función `run` la instrucción indicada en los parámetros, vamos a duplicar el proceso actual llamando a `/proc/self/exe` para que esta segunda vez cambie el flujo de ejecución y no pase por la función `run`, sino por la función `child`.
+Ahora, en vez de ejecutar desde la función `run` la instrucción indicada en los parámetros, vamos a duplicar el proceso actual llamando a `/proc/self/exe` para que en esta segunda ejecución se cambie el flujo del programa y no pase por la función `run`, sino por la función `child`.
 
 ```go
 cmd := exec.Command ("/proc/self/exe", append([]string {"child"}, os.Args[2:]...)...)
@@ -344,7 +346,7 @@ func child() {
 
 ??? info "Explicación: ¿por qué crear una nueva función?"
 
-    Ahora no sólo vamos a añadir _namespaces_ y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función `run` y realizamos las nuevas acciones después de `cmd.Run()` no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de `cmd.Run()` no se estarían creando aún los _namespaces_: es justo en mientras transcurre en `cmd.Run()` cuando queremos modificar el contenedor.
+    Ahora no sólo vamos a añadir _namespaces_ y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función `run` y realizamos las nuevas acciones después de `cmd.Run()` no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de `cmd.Run()` no se habrían creado aún los_namespaces: es justo mientras transcurre en `cmd.Run()` cuando queremos modificar el contenedor.
 
     Por eso una opción es obligar al proceso a llamarse a una copia de sí mismo y cambiar el flujo del programa a la nueva función `child`.
 
