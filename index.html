@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
     
     
       
@@ -59,7 +59,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#que-es-un-contenedor" class="md-skip">
+        <a href="#una-aproximacion-a-los-contenedores" class="md-skip">
           Skip to content
         </a>
       
@@ -202,8 +202,91 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#que-es-un-contenedor" class="md-nav__link">
+    ¿Qué es un contenedor?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#diferencia-entre-mv-y-contenedores" class="md-nav__link">
     Diferencia entre MV y contenedores
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historia-de-contenedores" class="md-nav__link">
+    Historia de contenedores
+  </a>
+  
+    <nav class="md-nav" aria-label="Historia de contenedores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chroot-1979" class="md-nav__link">
+    Chroot (1979)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#freebsd-jails-2000" class="md-nav__link">
+    FreeBSD Jails (2000)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solaris-zones-2004" class="md-nav__link">
+    Solaris Zones (2004)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cgroups-y-namespaces-2006-2007" class="md-nav__link">
+    Cgroups y Namespaces (2006-2007)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lxc-2008" class="md-nav__link">
+    LXC (2008)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lmctfy-y-docker-2013" class="md-nav__link">
+    LMCTFY y Docker (2013)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oci-2015" class="md-nav__link">
+    OCI (2015)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#otras-tecnologias" class="md-nav__link">
+    Otras tecnologías
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-de-los-contenedores" class="md-nav__link">
+    Arquitectura de los contenedores
   </a>
   
 </li>
@@ -272,8 +355,91 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#que-es-un-contenedor" class="md-nav__link">
+    ¿Qué es un contenedor?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#diferencia-entre-mv-y-contenedores" class="md-nav__link">
     Diferencia entre MV y contenedores
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historia-de-contenedores" class="md-nav__link">
+    Historia de contenedores
+  </a>
+  
+    <nav class="md-nav" aria-label="Historia de contenedores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chroot-1979" class="md-nav__link">
+    Chroot (1979)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#freebsd-jails-2000" class="md-nav__link">
+    FreeBSD Jails (2000)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solaris-zones-2004" class="md-nav__link">
+    Solaris Zones (2004)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cgroups-y-namespaces-2006-2007" class="md-nav__link">
+    Cgroups y Namespaces (2006-2007)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lxc-2008" class="md-nav__link">
+    LXC (2008)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lmctfy-y-docker-2013" class="md-nav__link">
+    LMCTFY y Docker (2013)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oci-2015" class="md-nav__link">
+    OCI (2015)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#otras-tecnologias" class="md-nav__link">
+    Otras tecnologías
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-de-los-contenedores" class="md-nav__link">
+    Arquitectura de los contenedores
   </a>
   
 </li>
@@ -291,7 +457,8 @@
               
                 
                 
-                <h1 id="que-es-un-contenedor">¿Qué es un contenedor?</h1>
+                <h1 id="una-aproximacion-a-los-contenedores">Una aproximación a los contenedores</h1>
+<h2 id="que-es-un-contenedor">¿Qué es un contenedor?</h2>
 <p>La virtualización es un proceso mediante el cual un software es usado para crear una abstracción sobre unos recursos, dando la sensación de que los elementos hardware se dividen en varias computadores virtuales.</p>
 <p>Existen dos tipos técnicas principales de virtualización:</p>
 <ol>
@@ -305,8 +472,8 @@
 </div>
 <h2 id="diferencia-entre-mv-y-contenedores">Diferencia entre MV y contenedores</h2>
 <figure>
-  <img src="./img/vm_vs_cont.png" width="600" />
-  <figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
+<img src="./img/vm_vs_cont.png" width="650" />
+<figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
 </figure>
 
 <ul>
@@ -316,7 +483,7 @@
 <li>Dentro del contendor se encuentra <strong>únicamente el código, librerías y ejecutables estrictamente necesarios</strong>.</li>
 </ul>
 <div class="admonition info">
-<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Usos principales</label><div class="tabbed-content">
+<div class="tabbed-set" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Usos principales</label><div class="tabbed-content">
 <ul>
 <li><strong>Microservicios</strong>: los contenedores <strong>son ligeros y envuelven servicios muy pequeños</strong>, lo que los hace muy aptos para su uso en microservicios.</li>
 <li><strong>DevOps + CI/CD</strong>: facilita el ciclo _"build, test and deploy".</li>
@@ -324,15 +491,64 @@
 </ul>
 </div>
 <input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Ventajas principales</label><div class="tabbed-content">
-<ol>
+<ul>
 <li><strong>Rapidez y ligereza</strong>.</li>
 <li><strong>Portabilidad e independencia de plataformas</strong>.</li>
 <li><strong>Escalabilidad</strong>.</li>
-</ol>
+</ul>
+</div>
+<input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><label for="__tabbed_1_3">Desventajas principales</label><div class="tabbed-content">
+<ul>
+<li><strong>Seguridad</strong>: el aislamiento entre contenedores y el host es menor: puede provocar vulnerabilidades.</li>
+<li><strong>Monitorización</strong>: existen varias capas que monitorizar aunque sólo se tenga una aplicación en un contenedor.</li>
+<li><strong>Complejidad a gran escala</strong>.</li>
+</ul>
 </div>
 </div>
 </div>
-<p>Esto es una prueba del actions2</p>
+<h2 id="historia-de-contenedores">Historia de contenedores</h2>
+<h3 id="chroot-1979">Chroot (1979)</h3>
+<p><code>chroot</code> es una llamada al sistema que permite <strong>cambiar el directorio raiz de un proceso y de sus hijos</strong> a un nuevo lugar dentro del sistema de archivos. Esto hace que un grupo de procesos tengan una <strong>visión limitada del almacenamiento</strong> del sistema.</p>
+<p>El principal <strong>problema</strong> de <code>chroot</code> es que los procesos con permisos de root se pueden <strong>saltar el aislamiento</strong> con facilidad.</p>
+<h3 id="freebsd-jails-2000">FreeBSD Jails (2000)</h3>
+<p>Fue el <strong>primer "pseudo-contenedor"</strong> y el impulsor de las tecnologías de los contenedores que existen hoy en día.</p>
+<p>Su objetivo era <strong>"confinar el root omnipotente"</strong>, que da nombre al documento donde se presenta la herramienta.</p>
+<p>Las Jails dan uso a <code>chroot</code> añadiendo nuevos mecanismos existentes en el sistema operativo. En cada <em>jail</em> los procesos pueden <strong>manipular únicamente los servicios y archivos a los que se le da acceso</strong> (por ello se le dio el nombre de <em>jail</em>: cárcel en inglés, como si los procesos estuvieran en prisión). El administrador del sistema puede separar el sistema en varias celdas asignando un superusuario a cada una <strong>sin perder el control</strong> del sistema completo.</p>
+<p>Para <strong>mantener la seguridad</strong> deseada se <strong>desactivaron ciertas llamadas al sistema</strong> (para evitar, por ejemplo, el <em>spoofing</em>), aunque esto impida utilizar ciertas instrucciones comunes como el comando <code>ping</code>.</p>
+<p>Por último, <strong>cada celda tiene sus propios UID y GID</strong>: un mismo usuario en una celda puede corresponderse con otro usuario en distinta celda.</p>
+<h3 id="solaris-zones-2004">Solaris Zones (2004)</h3>
+<p>Los creadores de esta tecnología no sólo buscaban <strong>mantener la seguridad</strong>, sino también <strong>mejorar el uso de recursos a gran escala</strong>. De hecho, se pretendía dar soporte a aplicaciones comerciales potencialmente escalables.</p>
+<p>El objetivo era lograr que los <strong>administradores</strong> necesitaran pocos minutos para <strong>configurar y lanzar una nueva <em>zone</em></strong>: el sistema se encargaría de crearla automáticamente añadiendo los límites en recursos compartidos que se consumían (inicialmente sólo CPU).</p>
+<p>El administrador puede configurar las propiedades de las <em>zones</em> en tiempo real o mediante scripts.</p>
+<p>Existen dos tipos de <em>zones</em>:</p>
+<ul>
+<li><em>Global zone</em>: es la <em>zone</em> por defecto que tiene control sobre todos los procesos. Siempre existe aunque no se haya creado ninguna manualmente.</li>
+<li><em>Non-global zone</em>: son las <em>zones</em> configuradas desde la global.</li>
+</ul>
+<p>Algo a tener en cuenta es que las Zones se preocupan por <strong>mantener ciertas utilidades</strong> sin dejar a un lado la seguridad (por ejemplo, permite utilizar el comando <code>ping</code> a diferencia de las <em>jails</em>).</p>
+<h3 id="cgroups-y-namespaces-2006-2007">Cgroups y Namespaces (2006-2007)</h3>
+<p>En el 2006 se propuso un <em>framework</em> que <strong>agrupa procesos</strong> y aprovecha los mecanismos de control existentes del <em>kernel</em>. El objetivo era que los <strong>usuarios se centren en el controlador de recursos</strong> y se abstraigan de cómo los procesos son gestionados y monitorizados.</p>
+<p>Este mecanismo en un principio se llamaba <em>process containers</em> pero se cambió el nombre a <strong><em>cgroups</em></strong> para diferenciarlo de los contenedores que conocemos hoy en día.</p>
+<p>Por otro lado, en el 2002 se creó el primer <strong><em>namespace</em></strong>, el <em>mount namespace</em>. Aunque fue más adelante a partir del año 2007 cuando se comenzó a ver el potencial que podían tener junto a otras funcionalidades como los <em>cgroups</em>, así que se empezaron a desarrollar nuevos <em>namespaces</em>. En la actualidad existen ocho.</p>
+<h3 id="lxc-2008">LXC (2008)</h3>
+<p>Los LXC se podrían considerar los primeros contenedores tal y como conocemos el concepto hoy en día: fue la <strong>primera tecnología en aplicar los dos elementos principales de los contenedores: <em>cgroups</em> y <em>namespaces</em></strong>.</p>
+<p>Permite al usuario comunicarse con las facilidades que ofrecen las funcionalidades del <em>kernel</em> mediante una <strong>interfaz en línea de comandos</strong>. Sin embargo, no es una herramienta apropiada para realizar tareas de gestión de contenedores en un alto nivel.</p>
+<h3 id="lmctfy-y-docker-2013">LMCTFY y Docker (2013)</h3>
+<p><strong>LMCTFY</strong> (Let Me Containerize That For You) fue la versión open-source del <strong>stack de Google</strong> a los contenedores de Linux. Su desarrollo <strong>finalizó en 2015</strong> y Google comenzó a transferir parte de la implementación a <em>libcontainer</em> ahora mismo es una parte fundamental del stack de Docker y forma parte de OCI.</p>
+<p>Por otro lado, <strong>Docker</strong> supuso un despunte en la popularidad de los contenedores en el año de su salida y el crecimiento de ambos conceptos han ido de la mano desde entonces siendo <strong>hoy en día líder en este ámbito</strong>.</p>
+<p>En sus inicios utilizaba LXC, pero más tarde lo sustituyó por su propia librería <em>libcontainer</em>.</p>
+<h3 id="oci-2015">OCI (2015)</h3>
+<p><strong>OCI</strong> (Open Container Initiative) es un proyecto de la Linux Foundation cuyo objetivo es <strong>diseñar un estándar abierto para la virtualización basada en contenedores</strong>. Fue establecida en 2015 por Docker y otros líderes de la industria.</p>
+<p>Después del lanzamiento de Docker, surgió una comunidad alrededor de los contenedores. Sin embargo, con el paso del tiempo fueron apareciendo nuevas tecnologías y herramientas que satisfacían las neceseidades que iban surgiendo. Este fue el motivo principal por el que surgió este estándar.</p>
+<p>Actualmente, OCI define dos especificaciones, aunque <a href="#chroot-1979">hablaremos más tarde de ellas en este documento</a> <strong><em>*</em></strong>OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO<strong><em>*</em></strong>*</p>
+<h3 id="otras-tecnologias">Otras tecnologías</h3>
+<p>A lo largo de las dos últimas décadas han ido surgiendo otras tecnologías de virtualización de sistema operativo, pero han sido menos importantes para el ecosistema de los contenedores que las anteriormente mencionadas.</p>
+<p>Entre ellas podemos encontrar <strong>Linux VServer</strong> (2001), <strong>OpenVZ</strong> (2005), <strong>Warden</strong> (2011), <strong>Singularity</strong> (2015) o <strong>Podman</strong> (2018).</p>
+<h2 id="arquitectura-de-los-contenedores">Arquitectura de los contenedores</h2>
+<figure>
+<img src="./img/docker_architecture.png" width="600" />
+<figcaption>Generalización de la arquitectura de los contenedores a partir de la arquitectura de Docker</figcaption>
+</figure>
                 
               
               
@@ -387,10 +603,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      <script src="assets/javascripts/bundle.a1609d9a.min.js"></script>
       
     
   </body>

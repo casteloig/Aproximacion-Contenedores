@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.4">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
     
     
       
@@ -427,10 +427,10 @@
 <span class="gp">root@bar:~$ </span>docker                   run &lt;image&gt; &lt;command&gt; &lt;args&gt;
 </code></pre></div>
 <div class="admonition info">
-<p>Cabe destacar que es necesario que <strong>todos los ficheros estén en una carpeta cuyo grupo y usuario pertenezcan a root</strong>, así como realizar todos los comandos con privilegios de root.</p>
+<p>Cabe destacar que es necesario que <strong>todos los ficheros estén en una carpeta cuyo grupo y usuario pertenezca a root</strong>, así como realizar todos los comandos con privilegios de root.</p>
 </div>
 <h2 id="paso-1-creacion-del-codigo-base">Paso 1: Creación del código base</h2>
-<p>El primer paso consiste en <strong>escribir las primeras dos funciones</strong>: <code>main</code>, que simplemente comprobará que se ha ejecutado el comando correcto en terminal y <code>run</code>, que imprimirá en pantalla los datos del proceso y ejecutará otro nuevo.</p>
+<p>El primer paso consiste en <strong>escribir las primeras dos funciones</strong>: <code>main</code>, que simplemente comprobará que se ha ejecutado el comando correcto en terminal y <code>run</code>, que imprimirá en pantalla los datos del proceso y ejecutará otro nuevo que le indiquemos en parámetro.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
@@ -469,7 +469,7 @@
         <span class="nx">Cloneflags</span><span class="p">:</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUTS</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div>
-<p>Con estos cambios lograremos que ,al iniciar el contenedor con <code>go run contenedor.go run /bin/bash</code>, <strong>podamos cambiar los el <em>hostname</em> dentro del contenedor</strong> y que, al salir del contenedor (saliendo del bash con un <code>exit</code>) no haya cambiado en el host.</p>
+<p>Con estos cambios lograremos que, al iniciar el contenedor con <code>go run contenedor.go run /bin/bash</code>, <strong>podamos cambiar el <em>hostname</em> dentro del contenedor</strong> y que, al salir del mismo (saliendo del bash con un <code>exit</code>) no haya cambiado en el host.</p>
 <details class="abstract"><summary>Código completo hasta ahora</summary><div class="highlight"><pre><span></span><code><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="p">(</span>
@@ -512,21 +512,21 @@
                             <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUSER</span><span class="p">,</span>
         <span class="p">}</span>
 </code></pre></div>
-<p>El problema es que ahora mismo, cuando ejecutamos el contenedor, nos informa que el proceso que lo llama tiene UID 0 pero si comprobamos el usuario que se nos asignó en la nueva tabla de UID nos asigna un usuario "aleatorio":</p>
+<p>El problema es que ahora mismo, cuando ejecutamos el contenedor, nos informa que el proceso que lo llama tiene UID 0 pero si comprobamos el usuario que se nos asignó en la nueva tabla de UID (o sea, en la tabla del contenedor) es un usuario "aleatorio":</p>
 <div class="highlight"><pre><span></span><code><span class="gp">root@bar:~$ </span>go run contenedor.go run /bin/bash
 <span class="go">Corriendo &#39;[/bin/bash]&#39; con User ID 0 en PID 2792</span>
 <span class="gp">root@bar:~$ </span>id
 <span class="go">uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)</span>
 </code></pre></div>
-<p>Así que le vamos a indicar que <strong>mapee el usuario fuera del contenedor (UID 0) con el que queramos dentro</strong>:</p>
+<p>Así que le vamos a indicar que <strong>mapee el usuario de fuera del contenedor (UID 0) con el que queramos dentro</strong>:</p>
 <div class="highlight"><pre><span></span><code><span class="nx">cmd</span><span class="p">.</span><span class="nx">SysProcAttr</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcAttr</span><span class="p">{</span>
     <span class="nx">Cloneflags</span><span class="p">:</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUTS</span> <span class="p">|</span>
                 <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUSER</span><span class="p">,</span>
     <span class="nx">UidMappings</span><span class="p">:</span> <span class="p">[]</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcIDMap</span><span class="p">{</span>
         <span class="p">{</span>
-            <span class="nx">ContainerID</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>           <span class="c1">// UID dentro del container</span>
+            <span class="nx">ContainerID</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>           <span class="c1">// UID dentro del contenedor</span>
             <span class="nx">HostID</span><span class="p">:</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Getuid</span><span class="p">(),</span>      <span class="c1">// UID en el host</span>
-            <span class="nx">Size</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                  <span class="c1">// Quiero mapear solo unuser</span>
+            <span class="nx">Size</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>                  <span class="c1">// Quiero mapear solo un usuario</span>
         <span class="p">},</span>
     <span class="p">},</span>
     <span class="nx">GidMappings</span><span class="p">:</span> <span class="p">[]</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcIDMap</span><span class="p">{</span>
@@ -587,7 +587,7 @@
 </code></pre></div>
 </details>
 <h2 id="paso-4-aislando-con-namespace-ns-mount">Paso 4: Aislando con Namespace NS (Mount)</h2>
-<p>Este fue el primer <em>Namespace</em> que se incluyó en el kernel de Linux y uno de los más sencillos: simplemente aisla los puntos de montaje. De tal forma que podemos <strong>esconder los montajes del host en el contenedor y viceversa</strong>.</p>
+<p>Este fue el primer <em>Namespace</em> que se incluyó en el kernel de Linux y uno de los más sencillos: simplemente aisla los puntos de montaje. De esta forma podemos <strong>esconder los <em>mounts</em> entre el host y el contenedor y viceversa</strong>.</p>
 <p>Para ver los puntos de montaje usados en cada una de las máquinas con el comando <code>mount</code>.</p>
 <p>Para añadir esta característica debemos incluir la <em>flag</em> apropiada:</p>
 <div class="highlight"><pre><span></span><code><span class="nx">cmd</span><span class="p">.</span><span class="nx">SysProcAttr</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">syscall</span><span class="p">.</span><span class="nx">SysProcAttr</span><span class="p">{</span>
@@ -655,10 +655,12 @@
                 <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWUSER</span> <span class="p">|</span>
                 <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWNS</span>   <span class="p">|</span>
                 <span class="nx">syscall</span><span class="p">.</span><span class="nx">CLONE_NEWPID</span><span class="p">,</span>
+
+                <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Sin embargo, cuando ejecutamos un <code>ps a</code> seguimos pudiendo ver los mismos procesos de antes.</p>
-<details class="info"><summary>Explicación: Mount Namespace no aísla los procesos".</summary></summary><p>Es importante saber que <strong><em>/proc</em></strong> es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un <strong><em>ps a</em></strong>, lo que está pasando realmente es que esta instrucción consulta los datos del directorio anteriormente nombrado.</p>
+<details class="info"><summary>Explicación: Mount Namespace no aísla los procesos</summary><p>Es importante saber que <strong><em>/proc</em></strong> es un pseudo-filesystem montado por el sistema operativo por defecto donde se muestra la información sobre los procesos. Cuando hacemos un <strong><em>ps a</em></strong>, lo que está pasando realmente es que esta instrucción está consultando los datos del directorio anteriormente nombrado.</p>
 </details>
 <p>La solución es asignar un nuevo <strong><em>/proc</em></strong> en la raíz del contenedor. Para ello necesitamos un nuevo <em>root filesystem</em> como Alpine (que continene únicamente los archivos necesarios para que funcione un contenedor).</p>
 <h2 id="paso-6-anadiendo-un-filesystem-para-el-contenedor">Paso 6: Añadiendo un Filesystem para el contenedor</h2>
@@ -668,7 +670,7 @@
 <details class="info"><summary>Explicación: directorio /proc</summary><p>Otra cosa que se podría intuir es que es necesario añadir el <em>Namespace NS (de Mount)</em> para aislar ambos directorios. Pero no, este último comentario es falso pese a que existan muchas referencias en la red a que es completamente necesario: cuando un proceso como <code>ps</code> quiere comprobar los procesos activos en <code>/proc</code> lo que hace es ir directamente a ese archivo. Nuestro proceso, tanto con el <em>Namespace NS</em> como sin él, va a seguir mirando los procesos en la carpeta <code>/proc</code>, es decir, la que está justo debajo del directorio raíz y no en la del nuevo <em>root filesystem</em> de alpine. Así que podríamos montar nuestro nuevo <code>proc/</code> sin el <em>Namespace NS</em>.</p>
 </details>
 <p>La solución de que se muestren únicamente los procesos activos de nuestro contenedor se divide en dos pasos, pero antes, debemos cambiar un poco la forma en la que habíamos planteado el programa en un principio.</p>
-<p>Ahora, en vez de ejecutar desde la función <code>run</code> la instrucción indicada en los parámetros, vamos a duplicar el proceso actual llamando a <code>/proc/self/exe</code> para que esta segunda vez cambie el flujo de ejecución y no pase por la función <code>run</code>, sino por la función <code>child</code>.</p>
+<p>Ahora, en vez de ejecutar desde la función <code>run</code> la instrucción indicada en los parámetros, vamos a duplicar el proceso actual llamando a <code>/proc/self/exe</code> para que en esta segunda ejecución se cambie el flujo del programa y no pase por la función <code>run</code>, sino por la función <code>child</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nx">Command</span> <span class="p">(</span><span class="s">&quot;/proc/self/exe&quot;</span><span class="p">,</span> <span class="nb">append</span><span class="p">([]</span><span class="kt">string</span> <span class="p">{</span><span class="s">&quot;child&quot;</span><span class="p">},</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
 </code></pre></div>
 <p>De esta forma, habría otra función dentro del programa que se ejecutaría la segunda vez, donde implementamos la solución a nuestro último problema:</p>
@@ -700,7 +702,7 @@
         <span class="nx">must</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nx">Run</span><span class="p">())</span>
 <span class="p">}</span>
 </code></pre></div>
-<details class="info"><summary>Explicación: ¿por qué crear una nueva función?</summary><p>Ahora no sólo vamos a añadir <em>namespaces</em> y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función <code>run</code> y realizamos las nuevas acciones después de <code>cmd.Run()</code> no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de <code>cmd.Run()</code> no se estarían creando aún los <em>namespaces</em>: es justo en mientras transcurre en <code>cmd.Run()</code> cuando queremos modificar el contenedor.</p>
+<details class="info"><summary>Explicación: ¿por qué crear una nueva función?</summary><p>Ahora no sólo vamos a añadir <em>namespaces</em> y ejecutar una instrucción sino que vamos a realizar otras acciones. Si cogemos el flujo de la función <code>run</code> y realizamos las nuevas acciones después de <code>cmd.Run()</code> no se estarían completando hasta que acabara esta última orden. A su vez, si introducimos las acciones antes de <code>cmd.Run()</code> no se habrían creado aún los_namespaces: es justo mientras transcurre en <code>cmd.Run()</code> cuando queremos modificar el contenedor.</p>
 <p>Por eso una opción es obligar al proceso a llamarse a una copia de sí mismo y cambiar el flujo del programa a la nueva función <code>child</code>.</p>
 <p>Cabe destacar que el <em>filesystem</em> propuesto de Alpine no cuenta con Bash, así que tendríamos que mandar ejecutar <code>/bin/sh</code></p>
 <p>Por otro lado, es recomendable que a partir de ahora empezemos a manejar los errores que nos puedan aparecer:</p>
@@ -1064,10 +1066,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4fa0e4ee.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.1d3bfcf1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a1609d9a.min.js"></script>
       
     
   </body>
