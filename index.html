@@ -289,6 +289,106 @@
     Arquitectura de los contenedores
   </a>
   
+    <nav class="md-nav" aria-label="Arquitectura de los contenedores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1o-componentes-del-linux-kernel" class="md-nav__link">
+    1º Componentes del Linux Kernel
+  </a>
+  
+    <nav class="md-nav" aria-label="1º Componentes del Linux Kernel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#namespaces" class="md-nav__link">
+    Namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-groups" class="md-nav__link">
+    Control Groups
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-filesystem" class="md-nav__link">
+    Union Filesystem
+  </a>
+  
+    <nav class="md-nav" aria-label="Union Filesystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overlayfs" class="md-nav__link">
+    OverlayFS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    Capabilities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pivot_root" class="md-nav__link">
+    Pivot_root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2o-container-runtimes" class="md-nav__link">
+    2º Container Runtimes
+  </a>
+  
+    <nav class="md-nav" aria-label="2º Container Runtimes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#low-level-container-runtimes" class="md-nav__link">
+    Low-level container runtimes
+  </a>
+  
+    <nav class="md-nav" aria-label="Low-level container runtimes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runc" class="md-nav__link">
+    runc
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -442,6 +542,106 @@
     Arquitectura de los contenedores
   </a>
   
+    <nav class="md-nav" aria-label="Arquitectura de los contenedores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1o-componentes-del-linux-kernel" class="md-nav__link">
+    1º Componentes del Linux Kernel
+  </a>
+  
+    <nav class="md-nav" aria-label="1º Componentes del Linux Kernel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#namespaces" class="md-nav__link">
+    Namespaces
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-groups" class="md-nav__link">
+    Control Groups
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#union-filesystem" class="md-nav__link">
+    Union Filesystem
+  </a>
+  
+    <nav class="md-nav" aria-label="Union Filesystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overlayfs" class="md-nav__link">
+    OverlayFS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capabilities" class="md-nav__link">
+    Capabilities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pivot_root" class="md-nav__link">
+    Pivot_root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2o-container-runtimes" class="md-nav__link">
+    2º Container Runtimes
+  </a>
+  
+    <nav class="md-nav" aria-label="2º Container Runtimes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#low-level-container-runtimes" class="md-nav__link">
+    Low-level container runtimes
+  </a>
+  
+    <nav class="md-nav" aria-label="Low-level container runtimes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#runc" class="md-nav__link">
+    runc
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -540,15 +740,258 @@
 <h3 id="oci-2015">OCI (2015)</h3>
 <p><strong>OCI</strong> (Open Container Initiative) es un proyecto de la Linux Foundation cuyo objetivo es <strong>diseñar un estándar abierto para la virtualización basada en contenedores</strong>. Fue establecida en 2015 por Docker y otros líderes de la industria.</p>
 <p>Después del lanzamiento de Docker, surgió una comunidad alrededor de los contenedores. Sin embargo, con el paso del tiempo fueron apareciendo nuevas tecnologías y herramientas que satisfacían las neceseidades que iban surgiendo. Este fue el motivo principal por el que surgió este estándar.</p>
-<p>Actualmente, OCI define dos especificaciones, aunque <a href="#chroot-1979">hablaremos más tarde de ellas en este documento</a> <strong><em>*</em></strong>OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO<strong><em>*</em></strong>*</p>
+<p>Actualmente, OCI define dos especificaciones, aunque <a href="#chroot-1979">hablaremos más tarde de ellas en este documento</a> <strong><em>*</em></strong>CAMBIAAAAAAAAAR LIIIIINK<strong><em>*</em></strong>*</p>
 <h3 id="otras-tecnologias">Otras tecnologías</h3>
 <p>A lo largo de las dos últimas décadas han ido surgiendo otras tecnologías de virtualización de sistema operativo, pero han sido menos importantes para el ecosistema de los contenedores que las anteriormente mencionadas.</p>
 <p>Entre ellas podemos encontrar <strong>Linux VServer</strong> (2001), <strong>OpenVZ</strong> (2005), <strong>Warden</strong> (2011), <strong>Singularity</strong> (2015) o <strong>Podman</strong> (2018).</p>
 <h2 id="arquitectura-de-los-contenedores">Arquitectura de los contenedores</h2>
+<p>Dada la ambigüedad con la que muchos profesionales se refieren a cada una de las capas que forman esta arquitectura y, dado que dependiendo de la tecnología a usar, pueden cambiar ligeramente las funciones que realizan sus componentes, se utilizará como referencia el stack de Docker.</p>
 <figure>
 <img src="./img/docker_architecture.png" width="600" />
 <figcaption>Generalización de la arquitectura de los contenedores a partir de la arquitectura de Docker</figcaption>
 </figure>
+
+<p>Comenzaremos el estudio por la parte inferior de la imágen, los componentes del Linux Kernel, subiendo hasta llegar al <em>Container Engine</em>.</p>
+<h3 id="1o-componentes-del-linux-kernel">1º Componentes del Linux Kernel</h3>
+<p>Existen numerosos componentes y herramientas del kernel que utilizan los contenedores para aislar los procesos. En concreto aquí estudiaremos cinco de ellos, siendo los más importantes los dos primeros:</p>
+<h4 id="namespaces">Namespaces</h4>
+<div class="admonition note">
+<p class="admonition-title">Definición de namespaces</p>
+<p>Proporcionan el <strong>aislamiento entre procesos</strong> mediante la <strong>encapsulación de ciertos recursos</strong> del sistema. De esta forma, hacen creer a los procesos dentro de un contenedor que tienen su propia instancia del recurso, aunque realmente lo están compartiendo.</p>
+</div>
+<p>Esta herramienta impide que, mediante una vulnerabilidad en un contenedor, unos intrusos puedan acceder a la máquina completa comprometiéndola.</p>
+<p>La API del kernel que facilita esta característica tiene tres llamadas principales:</p>
+<table>
+<thead>
+<tr>
+<th>Llamada</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clone</code></td>
+<td>Crea un proceso hijo al igual que <code>fork</code> pero proporcionando más control sobre qué partes del contexto se comparten.</td>
+</tr>
+<tr>
+<td><code>unshare</code></td>
+<td>Crea un nuevo <em>namespace</em> y ejecuta un nuevo proceso dentro de éste.</td>
+</tr>
+<tr>
+<td><code>setns</code></td>
+<td>Mueve el hilo actual dentro de un <em>namespace</em> existente</td>
+</tr>
+<tr>
+<td><code>ioctl</code></td>
+<td>Ofrece información sobre <em>namespaces</em>  (la información se maneja desde <code>/proc/$PID/ns</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>En la actualidad existen 8 <em>namespaces</em> distintos, cada uno de ellos proporciona <strong>distinto tipo de aislamiento</strong>:</p>
+<details class="summary"><summary>Tipos de namespaces</summary><div class="tabbed-set" data-tabs="2:8"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">MNT NS</label><div class="tabbed-content">
+<p><strong>Mount Namespace</strong></p>
+<p>Fue el primer <em>namespace</em> implementado. En aquel momento no se sabía que iban a crearse más tipos de <em>namespaces</em> así que su <em>flag</em> correspondiente en los comandos de <code>clone</code> y <code>unshare</code> es <code>CLONE_NEWNS</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p>Proporcionan <strong>aislamiento</strong> a las estructuras de datos que utiliza el sistema para gestionar los <strong>puntos de montaje</strong>. De esta forma, los procesos en distinto <em>mount namespace</em> tienen una visión distinta de la jerarquía de los sistemas de archivos.</p>
+</div>
+<p>Algunos usos que ofrece son:</p>
+<ul>
+<li>Cada usuario puede tener su propio <code>/tmp</code> para aumentar la seguridad frente a un usuario malicioso.</li>
+<li>Distintos procesos pueden tener un sistema de archivos raíz (es un concepto parecido a <code>chroot</code>).</li>
+<li>Los puntos de montaje pueden ser privados o compartidos.</li>
+</ul>
+</div>
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">UTS NS</label><div class="tabbed-content">
+<p><strong>UNIX Time-Sharing</strong></p>
+<p>Desde la implementación del anterior <em>namespace</em> hasta este pasaron 4 años. Este es el más sencillo.</p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p><strong>Aísla el <em>hostname</em> y el <em>domain-name</em></strong> del contenedor.</p>
+</div>
+<p>La <em>flag</em> correspondiente es <code>CLONE_NEWUTS</code>.</p>
+</div>
+<input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><label for="__tabbed_2_3">IPC NS</label><div class="tabbed-content">
+<p><strong>Inter Process Communication</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p><strong>Aísla cierta la compartición de ciertos recursos que facilitan la comunicación</strong> como la memoria, objetos System V IPC y colas de mensajes POSIX.</p>
+</div>
+<p>Sin embargo, después de un <code>clone</code> se siguen compartiendo señales, sockets, descriptores de archivos o sondeos de memoria (habría que aislarlos con otros <em>namespaces</em>).</p>
+<p>Su flag correspondiente es <code>CLONE_NETIPC</code>.</p>
+</div>
+<input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><label for="__tabbed_2_4">PID NS</label><div class="tabbed-content">
+<p><strong>Process ID</strong></p>
+<p>Los procesos de un sistema pertenecen a un árbol de procesos global visible únicamente por el <em>host</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p>Este <em>namespace</em> crea un nuevo <strong>árbol de procesos</strong> propio de cada contenedor.</p>
+</div>
+<p>Los <strong>procesos</strong> que estén dentro de este <em>namespace</em> <strong>pertenecen</strong>, por tanto, <strong>a dos árboles</strong>, el global y el propio del <em>namespace</em>. De esta forma un mismo proceso puede tener varios PIDs dependiendo de en qué árbol se consulte.</p>
+<p><figure>
+    <img src="./img/pid_ns.png" width="500" />
+    <figcaption>Ejemplo generalizado de bridge</figcaption>
+</figure></p>
+<p>El primer PID dentro del nuevo <em>namespace</em> siempre es el 1. Este proceso debería tener unas características únicas para poder funcionar como <em>init</em> y así poder tener más de un proceso en un contenedor.</p>
+<p>Uno de los principales beneficios que presenta es que los contenedores se pueden migrar de una máquina a otra manteniendo el árbol de procesos.</p>
+<p>Su <em>flag</em> es <code>CLONE_NEWPID</code>.</p>
+</div>
+<input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><label for="__tabbed_2_5">NET NS</label><div class="tabbed-content">
+<p><strong>Network</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p>Proporciona <strong>aislamiento de los recursos de red</strong>, donde cada contenedor puede tener su propio stack de recursos: tablas de enrutado, reglas de <em>iptables</em>, <em>sockets</em>, etc.</p>
+</div>
+<p>En las tecnologías actuales de contenedores se suele utilizar el modelo <em>bridge</em>. En este modelo el puente, que está en el <em>namespace</em> global, ofrece la conexión a los contenedores mediante una interfaz virtual. A la vez, cada contenedor, en su propio <em>namespace</em>, tiene una interfaz virtual conectada a la del puente.</p>
+<p><figure>
+    <img src="./img/net_ns.png" width="500" />
+    <figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
+</figure></p>
+<p>La <em>flag</em> correspondiente es <code>CLONE_NEWNET</code>.</p>
+</div>
+<input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><label for="__tabbed_2_6">User NS</label><div class="tabbed-content">
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p>Permite que <strong>los procesos puedan creer que están operando como root</strong> dentro de un contenedor, pero fuera del contenedor tienen realmente los privilegios de un usuario común.</p>
+</div>
+<p>Antes de que existiera este <em>namespace</em> si un proceso tenía permisos de root en cualquier entorno de aislamiento, también lo tenía en el sistema global, lo que era un problema muy grande en lo que a la seguridad se refiere.</p>
+<p>El UID dentro del <em>namespace</em> siempre se corresponderá con otro fuera de él en el host. Este mapeo se puede hacer manualmente y elegir qué UID se selecciona dentro del contenedor para un usuario global.</p>
+<p>Un ejemplo de mapeo entre las dos tablas de usuarios se puede observar en la siguiente imagen.</p>
+<p><figure>
+    <img src="./img/user_ns.png" width="500" />
+    <figcaption>Ejemplo de mapeo entre un UID del host con un UID dentro del contenedor</figcaption>
+</figure></p>
+<p>La <em>flag</em> correspondiente es <code>CLONE_NETUSER</code>.</p>
+</div>
+<input id="__tabbed_2_7" name="__tabbed_2" type="radio" /><label for="__tabbed_2_7">Cgroup NS</label><div class="tabbed-content">
+<p>Los <em>cgroups</em> (rupos de control en español) son una funcionalidad del kernel de Linux que trataremos en la sección <strong><em>*</em></strong><strong><em>*</em></strong><strong><em>*</em>*OJOOOOOOOOOOOOOO</strong><strong><em>*</em></strong>**** que, básicamente, implementan monitorización y limitación de los recursos que consume un grupo de procesos.</p>
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p><strong>Virtualiza la vista de los grupos de control</strong> que ven los procesos. Sin esta restricción, un proceso podría observar los grupos de control globales y acceder a la información sobre la limitación de recursos de otros procesos.</p>
+</div>
+<p>Tiene dos funciones principales:</p>
+<ol>
+<li>Evita que un grupo de control acceda a los límites de otro superior a él.</li>
+<li>Facilita la migración de contenedores al aislar unos grupos de otros. De esta forma podemos ahorrar la necesidad de replicar los límites según se van trasladando los contenedores.</li>
+</ol>
+<p>La <em>flag</em> correspondiente es <code>CLONE_NEWCGROUP</code>.</p>
+</div>
+<input id="__tabbed_2_8" name="__tabbed_2" type="radio" /><label for="__tabbed_2_8">Time NS</label><div class="tabbed-content">
+<div class="admonition note">
+<p class="admonition-title">Función</p>
+<p><strong>Virtualiza dos relojes del sistema</strong> permitiendo que, cuando un contenedor se migra de un nodo a otro, estos <strong>relojes son restaurados de forma consistente</strong> partiendo siempre del tiempo que tenía el reloj antes de ser migrado.</p>
+</div>
+<p>Estos dos relojes son el <code>CLOCK_MONOTONIC</code> y <code>CLOCK_BOOTTIME</code>.</p>
+<p>La <em>flag</em> correspondiente es <code>CLONE_NEWTIME</code>.</p>
+</div>
+</div>
+</details>
+<h4 id="control-groups">Control Groups</h4>
+<p>Antes de que se crearan los grupos de control existían formas para <strong>monitorizar y controlar procesos individuales</strong>, pero <strong>no había soporte</strong> para aplicar esas mismas operaciones <strong>a grupos de procesos</strong>. Por eso se acabaron implementando los <em>Process Containers</em>, que luego se renombraron a <em>cgroups</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Definición de Cgroups</p>
+<p>Son un <strong><em>framework</em></strong> basado en los mecanismos existentes del kernel para <strong>proporcionar una interfaz y un alcance más global a las operaciones de control y monitorización</strong> de procesos.</p>
+<p>Los grupos de control permiten <strong>repartir y asignar recursos entre un grupo de tareas o procesos</strong> del sistema.</p>
+</div>
+<p>Los grupos de control ofrecen cuatro características principales:</p>
+<ol>
+<li><strong>Limitación de recursos</strong>, como procesador, memoria, dispositivos E/S, etc.</li>
+<li><strong>Priorización</strong>, que es parecida a la anterior característica, pero no limita recursos a procesos sino que le da preferencia de consumo de recursos a un proceso seleccionado.</li>
+<li><strong>Monitorización</strong> de un grupo de procesos para obtener inforamción de qué procesos están consumiendo cuántos recursos.</li>
+<li><strong>Freezing de procesos</strong>. Esta es una herramienta que permite paralizar y retomar grupos de procesos. Es muy utilizada en el procesamiento por lotes.</li>
+</ol>
+<p>Existen dos versiones de <strong>Cgroups</strong>, hoy en día se está intentando hacer la transición en la mayoría de herramientas a la segunda versión. Para comprender esta última versión necesitamos entender tres conceptos:</p>
+<ul>
+<li><strong>Cgroup</strong>: es un grupo de tareas al que se le asocia uno o más subsistemas.</li>
+<li><strong>Subsistema o <em>resource controller</em></strong>: representa un único recurso, como la memoria o el tiempo de CPU.</li>
+<li><strong>Jerarquía</strong>: es el conjunto de todos los <em>cgroups</em> en forma de árbol. Cada proceso del sistema está en un <em>cgroup</em> determinado. Cada nodo (o sea, cada <em>cgroup</em>) del árbol tiene asociados uno o más subsistemas. En la versión 2 de los <em>cgroups</em> existe una sóla jerarquía.</li>
+</ul>
+<p>En la siguiente imagen podemos observar un ejemplo de jerarquía, donde existen cuatro <em>cgroups</em> distintos. Cada uno de ellos tiene asociados varios subsistemas. En el caso del Group_2 los subsistemas asociados son "memoria" y "pids", y sus grupos hijos heredan los mismos subsistemas, pero pueden asociar otros nuevos o disociar los heredados.</p>
+<figure>
+    <img src="./img/cgroup_jerar.png" width="700" />
+    <figcaption>Ejemplo de jerarquía de grupos de control.</figcaption>
+</figure>
+
+<p>Cada grupo se añade creando un nuevo directorio dentro de la carpeta raíz <code>/sys/fs/cgroup</code>. En el momento de crear dicha carpeta, el sistema añade los archivos necesarios para gestionar los <em>cgroups</em>.</p>
+<details class="note"><summary>¿Cómo añadimos los grupos de control de este ejemplo?</summary><p>Los subsistemas del siguiente ejemplo se añadirían creando en primer lugar cada <em>cgroup</em> y más tarde escribiendo en los subsistemas en los archivos autogenerados:</p>
+<div class="highlight"><pre><span></span><code>mkdir /sys/fs/cgroup/Cgroup_1
+mkdir /sys/fs/cgroup/Cgroup_2
+mkdir /sys/fs/cgroup/Cgroup_2.1
+mkdir /sys/fs/cgroup/Cgroup_2.2
+
+<span class="nb">echo</span> <span class="s2">&quot;+memory +io&quot;</span> &gt; /sys/fs/cgroup/Group_1/cgroup.subtree_control
+<span class="nb">echo</span> <span class="s2">&quot;+memory +pids&quot;</span> &gt; /sys/fs/cgroup/Group_2/cgroup.subtree_control
+<span class="nb">echo</span> <span class="s2">&quot;+io&quot;</span> &gt; /sys/fs/cgroup/Group_2.1/cgroup.subtree_control
+<span class="nb">echo</span> <span class="s2">&quot;-pids&quot;</span> &gt; /sys/fs/cgroup/Group_2.2/cgroup.subtree_control
+</code></pre></div>
+</details>
+<h4 id="union-filesystem">Union Filesystem</h4>
+<p>Los sistemas de archivos por capas permiten compartir archivos en el disco, lo que supone un ahorro de espacio.</p>
+<div class="admonition note">
+<p class="admonition-title">Definición</p>
+<p>Los <strong>Union Filesystem</strong> son un tipo de sistema de archivos por capas. Permite a los archivos y directorios de sistemas de archivos distintos estar <strong>superpuestos formando un único sistema de archivos</strong>.</p>
+</div>
+<h5 id="overlayfs">OverlayFS</h5>
+<p>Docker, actualmente, utiliza un tipo de Union Filesystem llamado Overlay2. Esta tecnología utiliza tres capas:</p>
+<ol>
+<li><strong>Base</strong> (sólo lectura): es la capa donde van los archivos base. En terminología de Docker se correspondería con la imagen.</li>
+<li><strong>Overlay</strong>: es la capa donde opera el usuario. En un principio ofrece una vista de la capa base y permite operar sobre ella, aunque los cambios no se guardan en esta capa.</li>
+<li><strong>Diff</strong>: es la capa donde se guardan los cambios realizados en la capa anterior.</li>
+</ol>
+<p>Una de las características fundamentales que usan los UnionFS es la <strong>técnica de COW</strong> (<em>Copy On Write</em>) que permite <strong>reducir el consumo de copias sin modificar</strong>. Si un fichero existe en la capa <strong>base</strong> y otra capa quiere leerlo, lee el original. Cuando una capa quiera modificar el archivo es cuando debe copiarla y modificarla en la propia capa que la necesite.</p>
+<figure>
+    <img src="./img/overlay.png" width="700" />
+    <figcaption>Las tres capas de Overlay2 junto a la técnica COW.</figcaption>
+</figure>
+
+<h4 id="capabilities">Capabilities</h4>
+<p>El usuario con UID 0 es el root y tiene el control completo del sistema. Esto puede traer problemas recurrentes de seguridad (las Jails ya intentaron confinar el root omnipotente). Por eso, las <em>capabilities</em> proponen una solución.</p>
+<div class="admonition note">
+<p class="admonition-title">Definición</p>
+<p>Las <strong><em>capabilities</em></strong> dividen los permisos que tiene un usuario en varias particiones (cada una de ellas es una <em>capability</em>).</p>
+</div>
+<p>Un buen ejemplo de su uso podría ser la posibilidad de permitir a un binario poder crear un <em>raw socket</em> como en el caso de la instrucción <code>ping</code> mediante la <em>capability</em> <code>CAP_NET_RAW</code> sin necesidad de asignarle el resto de privilegios que ofrece el usuario root.</p>
+<p>Existen dos tipos de <em>capabilities</em>, unas son las asociadas a procesos y otros asociadas a archivos. Las que están asociadas a archivos se unen con las asociadas a procesos cuando un proceso quiere ejecutar un archivo.</p>
+<div class="admonition hint">
+<p>En la práctica, los contenedores no necesitan todos los privilegios que ofrece el root. Así que, realmente, los usuarios root dentro de los contenedores tienen asignadas algunas <em>capabilities</em> para ofrecer únicamente ciertos permisos y restringir otros potencialmente inseguros**.</p>
+</div>
+<h4 id="pivot_root">Pivot_root</h4>
+<p>En el capítulo <strong><em>*</em></strong><strong>+OJOOOOOOOOOOO</strong><strong>*</strong>* ya explicamos la importancia que tuvo <code>chroot</code> para aparentar que cambiaba el directorio raíz de un proceso y de sus hijos. El problema que presenta es que no es segura, así que es mejor utiliza la alternativa <em>pivot_root</em>.</p>
+<p>La función completa de <strong>pivot_root</strong> es la siguiente:</p>
+<div class="highlight"><pre><span></span><code>int pivot_root <span class="o">(</span>const char *new_root, const char *put_old<span class="o">)</span><span class="p">;</span>
+</code></pre></div>
+<p>Pivot_root <strong>mueve el punto de montaje raíz al directorio put_old</strong> haciéndolo inaccesible para el proceso llamador como a todos sus hijos, mientras que convierte a <strong>new_root en el nuevo punto de montaje raíz</strong>.</p>
+<div class="admonition hint">
+<p>Esto soluciona las brechas de seguridad de <code>chroot</code> porque se aplica al <em>mount namespace</em>, así que está cambiando únicamente en el <em>namespace</em> del contenedor la posibilidad de acceder a la antigua raíz.</p>
+</div>
+<h3 id="2o-container-runtimes">2º Container Runtimes</h3>
+<div class="admonition note">
+<p class="admonition-title">¿Qué es un container runtime?</p>
+<p>Un <em>container runtime</em> es la herramienta o capa responsable de que el contenedor se ejecute correctamente (sin incluir los procesos que están dentro del contenedor).</p>
+</div>
+<p>Este término puede tener diferentes significados dependiendo del proyecto o comunidad donde se consulte, principalmente debido a que el rango de tareas que realiza un <em>runtime</em> no está plenamente definido. En este documento vamos a <strong>separar los <em>container runtimes</em> según las tareas que realicen</strong> en <em>low-level</em> y <em>high-level</em>.</p>
+<p>Algunos ejemplos de <strong>low-level</strong> pueden ser <strong>runc, crun, gvisor o kata-runtime</strong>, mientras que entre los ejemplos de <strong>high-level</strong> podemos encontrarnos con <strong>containerd o CRI-O</strong>.</p>
+<details class="info"><summary>¿Y Docker? ¿Dónde lo metemos?</summary><p>En muchas referencias se trata a Docker como un <em>container runtime</em> (refiriéndose a Docker con su significado de <em>daemon</em> más su CLI). Llegados a este punto podemos entender perfectamente que se puede considerar de esta forma, ya que su función es gestionar los contenedores y las imágenes (definición de <em>high-level container runtime</em>). Sin embargo, en este documento se va a colocar en un escalón superior, en los <em>container engines</em>.</p>
+<p>Esta decisión se ha tomado en base a dos razones: la primera es que una de las características principales que hacen a esta herramienta más popular que containerd o CRI-O entre los usuarios es su capacidad de facilitar la comunicación con el usuario. La segunda razón es que delega gran parte del trabajo en otro <em>high-level runtime</em>, que por defecto es containerd. Dicho esto, reiteramos que <strong>podría ser perfectamente considerado un <em>container runtime</em></strong>.</p>
+<p>De la misma forma, CRI-O o containerd se podrían llegar a considerar <em>container engines</em> si se utilizan a través de plugins CLI que permitan al usuario interactuar debidamente.</p>
+<p><strong>En resumen, la forma de referirse a estas tecnologías no es universal y, como hemos dicho, dependiendo de la comunidad y el proyecto, las etiquetas pueden cambiar</strong>.</p>
+<p>Una forma de entender gráficamente el porqué de que estos términos sean tan ambiguos se puede observar en la siguiente figura, que muestra de forma muy general y subjetiva el nivel al que operan algunos ejemplos de <em>container runtimes</em>.</p>
+<p><figure>
+    <img src="./img/runtimes.png" width="700" />
+    <figcaption>Nivel al que opera cada container runtime</figcaption>
+</figure></p>
+</details>
+<h4 id="low-level-container-runtimes">Low-level container runtimes</h4>
+<p>En esta página nos referiremos a los <strong><em>low-level runtimes</em></strong> para hablar de las capas que proporcionan las utilidades básicas como crear <em>namespaces</em> y comenzar el proceso de encapsular una aplicación en un contenedor, es decir a las herramientas que se <strong>comunican directamente con el kernel</strong>.</p>
+<h5 id="runc">runc</h5>
+<div class="admonition note">
+<p class="admonition-title">Definición</p>
+<p>Runc es un CLI que se encarga de crear contenedores y ejecutarlos según la especificación que se le proporcione. Esta especificación sigue el estándar OCI.</p>
+</div>
+<p>La razón de que sea un <em>low-level container runtime</em> cuando realmente sólo es un CLI es que antiguamente Docker utilizaba como <em>container runtime</em> LXC. Esto cambió más adelante y comenzó a crear junto con Google una librería propia que sustituyera a LXC: <strong><em>libcontainer</em></strong>. Hoy en día, runc utiliza <em>libcontainer</em>, de hecho es su pieza básica y fundamental, por eso se pueden considerar que ambos son la misma capa.</p>
+<details class="info"><summary>¿Qué estándar OCI?</summary><p>Los estándares OCI se introdujeron en <strong><em>*</em>*OJOOOOOOOOO</strong><strong><em>*</em></strong> indicando la existencia de dos estándares: de imágen y <em>runtime</em>. Runc sólo implementa la segunda especificación ya que no entiende de imágenes, sino de <em>bundles</em>.</p>
+<p>Un <em>bundle</em> es un <strong>conjunto de archivos que contiene todos los datos necesarios</strong> para que un <em>runtime</em> pueda realizar todas las operaciones necesarias para <strong>crear y ejecutar un contenedor</strong>.</p>
+</details>
                 
               
               
