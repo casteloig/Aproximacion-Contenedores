@@ -102,7 +102,7 @@ En sus inicios utilizaba LXC, pero más tarde lo sustituyó por su propia librer
 
 Después del lanzamiento de Docker, surgió una comunidad alrededor de los contenedores. Sin embargo, con el paso del tiempo fueron apareciendo nuevas tecnologías y herramientas que satisfacían las neceseidades que iban surgiendo. Este fue el motivo principal por el que surgió este estándar.
 
-Actualmente, OCI define dos especificaciones, aunque [hablaremos más tarde de ellas en este documento](#chroot-1979) *******OJOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO********
+Actualmente, OCI define dos especificaciones, aunque [hablaremos más tarde de ellas en este documento](#chroot-1979) *******CAMBIAAAAAAAAAR LIIIIINK********
 
 ### Otras tecnologías
 A lo largo de las dos últimas décadas han ido surgiendo otras tecnologías de virtualización de sistema operativo, pero han sido menos importantes para el ecosistema de los contenedores que las anteriormente mencionadas.
@@ -110,8 +110,313 @@ A lo largo de las dos últimas décadas han ido surgiendo otras tecnologías de 
 Entre ellas podemos encontrar **Linux VServer** (2001), **OpenVZ** (2005), **Warden** (2011), **Singularity** (2015) o **Podman** (2018).
 
 ## Arquitectura de los contenedores
+Dada la ambigüedad con la que muchos profesionales se refieren a cada una de las capas que forman esta arquitectura y, dado que dependiendo de la tecnología a usar, pueden cambiar ligeramente las funciones que realizan sus componentes, se utilizará como referencia el stack de Docker.
+
 
 <figure>
 <img src="./img/docker_architecture.png" width="600" />
 <figcaption>Generalización de la arquitectura de los contenedores a partir de la arquitectura de Docker</figcaption>
 </figure>
+
+Comenzaremos el estudio por la parte inferior de la imágen, los componentes del Linux Kernel, subiendo hasta llegar al _Container Engine_.
+
+### 1º Componentes del Linux Kernel
+Existen numerosos componentes y herramientas del kernel que utilizan los contenedores para aislar los procesos. En concreto aquí estudiaremos cinco de ellos, siendo los más importantes los dos primeros:
+
+#### Namespaces
+!!! note "Definición de namespaces"
+    Proporcionan el **aislamiento entre procesos** mediante la **encapsulación de ciertos recursos** del sistema. De esta forma, hacen creer a los procesos dentro de un contenedor que tienen su propia instancia del recurso, aunque realmente lo están compartiendo.
+
+Esta herramienta impide que, mediante una vulnerabilidad en un contenedor, unos intrusos puedan acceder a la máquina completa comprometiéndola.
+
+La API del kernel que facilita esta característica tiene tres llamadas principales:
+
+| Llamada      | Descripción                          |
+| ----------- | ------------------------------------ |
+| `clone`       | Crea un proceso hijo al igual que `fork` pero proporcionando más control sobre qué partes del contexto se comparten.  |
+| `unshare`       | Crea un nuevo _namespace_ y ejecuta un nuevo proceso dentro de éste. |
+| `setns`    | Mueve el hilo actual dentro de un _namespace_ existente |
+| `ioctl` | Ofrece información sobre _namespaces_  (la información se maneja desde `/proc/$PID/ns`)|
+
+En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona **distinto tipo de aislamiento**:
+
+
+
+??? summary "Tipos de namespaces"
+
+    === "MNT NS"
+
+        **Mount Namespace**
+
+        Fue el primer _namespace_ implementado. En aquel momento no se sabía que iban a crearse más tipos de _namespaces_ así que su _flag_ correspondiente en los comandos de `clone` y `unshare` es `CLONE_NEWNS`.
+
+        !!! note "Función"
+            Proporcionan **aislamiento** a las estructuras de datos que utiliza el sistema para gestionar los **puntos de montaje**. De esta forma, los procesos en distinto _mount namespace_ tienen una visión distinta de la jerarquía de los sistemas de archivos.
+
+        Algunos usos que ofrece son:
+
+        * Cada usuario puede tener su propio `/tmp` para aumentar la seguridad frente a un usuario malicioso.
+        * Distintos procesos pueden tener un sistema de archivos raíz (es un concepto parecido a `chroot`).
+        * Los puntos de montaje pueden ser privados o compartidos.
+
+
+    === "UTS NS"
+
+        **UNIX Time-Sharing**
+
+        Desde la implementación del anterior _namespace_ hasta este pasaron 4 años. Este es el más sencillo.
+
+        !!! note "Función"
+            **Aísla el _hostname_ y el _domain-name_** del contenedor.
+
+        La _flag_ correspondiente es `CLONE_NEWUTS`.
+        
+
+
+    === "IPC NS"
+
+        **Inter Process Communication**
+
+        !!! note "Función"
+            **Aísla cierta la compartición de ciertos recursos que facilitan la comunicación** como la memoria, objetos System V IPC y colas de mensajes POSIX.
+
+        Sin embargo, después de un `clone` se siguen compartiendo señales, sockets, descriptores de archivos o sondeos de memoria (habría que aislarlos con otros _namespaces_).
+
+        Su flag correspondiente es `CLONE_NETIPC`.
+    
+
+
+    === "PID NS"
+
+        **Process ID**
+
+        Los procesos de un sistema pertenecen a un árbol de procesos global visible únicamente por el _host_.
+
+        !!! note "Función"
+            Este _namespace_ crea un nuevo **árbol de procesos** propio de cada contenedor.
+
+        Los **procesos** que estén dentro de este _namespace_ **pertenecen**, por tanto, **a dos árboles**, el global y el propio del _namespace_. De esta forma un mismo proceso puede tener varios PIDs dependiendo de en qué árbol se consulte.
+
+        <figure>
+            <img src="./img/pid_ns.png" width="500" />
+            <figcaption>Ejemplo generalizado de bridge</figcaption>
+        </figure>
+
+        El primer PID dentro del nuevo _namespace_ siempre es el 1. Este proceso debería tener unas características únicas para poder funcionar como _init_ y así poder tener más de un proceso en un contenedor.
+
+        Uno de los principales beneficios que presenta es que los contenedores se pueden migrar de una máquina a otra manteniendo el árbol de procesos.
+
+        Su _flag_ es `CLONE_NEWPID`.
+
+
+
+    === "NET NS"
+
+        **Network**
+
+        !!! note "Función"
+            Proporciona **aislamiento de los recursos de red**, donde cada contenedor puede tener su propio stack de recursos: tablas de enrutado, reglas de _iptables_, _sockets_, etc.
+
+        En las tecnologías actuales de contenedores se suele utilizar el modelo _bridge_. En este modelo el puente, que está en el _namespace_ global, ofrece la conexión a los contenedores mediante una interfaz virtual. A la vez, cada contenedor, en su propio _namespace_, tiene una interfaz virtual conectada a la del puente.
+
+        <figure>
+            <img src="./img/net_ns.png" width="500" />
+            <figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
+        </figure>
+
+        La _flag_ correspondiente es `CLONE_NEWNET`.
+
+
+    
+    === "User NS"
+
+        !!! note "Función"
+            Permite que **los procesos puedan creer que están operando como root** dentro de un contenedor, pero fuera del contenedor tienen realmente los privilegios de un usuario común.
+
+        Antes de que existiera este _namespace_ si un proceso tenía permisos de root en cualquier entorno de aislamiento, también lo tenía en el sistema global, lo que era un problema muy grande en lo que a la seguridad se refiere.
+
+        El UID dentro del _namespace_ siempre se corresponderá con otro fuera de él en el host. Este mapeo se puede hacer manualmente y elegir qué UID se selecciona dentro del contenedor para un usuario global.
+
+        Un ejemplo de mapeo entre las dos tablas de usuarios se puede observar en la siguiente imagen.
+
+        <figure>
+            <img src="./img/user_ns.png" width="500" />
+            <figcaption>Ejemplo de mapeo entre un UID del host con un UID dentro del contenedor</figcaption>
+        </figure>
+
+        La _flag_ correspondiente es `CLONE_NETUSER`.
+
+
+    
+    === "Cgroup NS"
+
+        Los _cgroups_ (rupos de control en español) son una funcionalidad del kernel de Linux que trataremos en la sección ********************OJOOOOOOOOOOOOOO************* que, básicamente, implementan monitorización y limitación de los recursos que consume un grupo de procesos.
+
+        !!! note "Función"
+            **Virtualiza la vista de los grupos de control** que ven los procesos. Sin esta restricción, un proceso podría observar los grupos de control globales y acceder a la información sobre la limitación de recursos de otros procesos.
+
+        Tiene dos funciones principales:
+
+        1. Evita que un grupo de control acceda a los límites de otro superior a él.
+        2. Facilita la migración de contenedores al aislar unos grupos de otros. De esta forma podemos ahorrar la necesidad de replicar los límites según se van trasladando los contenedores.
+
+        La _flag_ correspondiente es `CLONE_NEWCGROUP`.
+
+
+
+    === "Time NS"
+
+        !!! note "Función"
+            **Virtualiza dos relojes del sistema** permitiendo que, cuando un contenedor se migra de un nodo a otro, estos **relojes son restaurados de forma consistente** partiendo siempre del tiempo que tenía el reloj antes de ser migrado.
+
+        Estos dos relojes son el `CLOCK_MONOTONIC` y `CLOCK_BOOTTIME`.
+
+        La _flag_ correspondiente es `CLONE_NEWTIME`.
+
+
+
+#### Control Groups
+
+Antes de que se crearan los grupos de control existían formas para **monitorizar y controlar procesos individuales**, pero **no había soporte** para aplicar esas mismas operaciones **a grupos de procesos**. Por eso se acabaron implementando los _Process Containers_, que luego se renombraron a _cgroups_.
+
+!!! note "Definición de Cgroups"
+
+    Son un **_framework_** basado en los mecanismos existentes del kernel para **proporcionar una interfaz y un alcance más global a las operaciones de control y monitorización** de procesos.
+
+    Los grupos de control permiten **repartir y asignar recursos entre un grupo de tareas o procesos** del sistema.
+
+
+Los grupos de control ofrecen cuatro características principales:
+
+1. **Limitación de recursos**, como procesador, memoria, dispositivos E/S, etc.
+2. **Priorización**, que es parecida a la anterior característica, pero no limita recursos a procesos sino que le da preferencia de consumo de recursos a un proceso seleccionado.
+3. **Monitorización** de un grupo de procesos para obtener inforamción de qué procesos están consumiendo cuántos recursos.
+3. **Freezing de procesos**. Esta es una herramienta que permite paralizar y retomar grupos de procesos. Es muy utilizada en el procesamiento por lotes.
+
+Existen dos versiones de **Cgroups**, hoy en día se está intentando hacer la transición en la mayoría de herramientas a la segunda versión. Para comprender esta última versión necesitamos entender tres conceptos:
+
+* **Cgroup**: es un grupo de tareas al que se le asocia uno o más subsistemas.
+* **Subsistema o _resource controller_**: representa un único recurso, como la memoria o el tiempo de CPU.
+* **Jerarquía**: es el conjunto de todos los _cgroups_ en forma de árbol. Cada proceso del sistema está en un _cgroup_ determinado. Cada nodo (o sea, cada _cgroup_) del árbol tiene asociados uno o más subsistemas. En la versión 2 de los _cgroups_ existe una sóla jerarquía.
+
+En la siguiente imagen podemos observar un ejemplo de jerarquía, donde existen cuatro _cgroups_ distintos. Cada uno de ellos tiene asociados varios subsistemas. En el caso del Group_2 los subsistemas asociados son "memoria" y "pids", y sus grupos hijos heredan los mismos subsistemas, pero pueden asociar otros nuevos o disociar los heredados.
+
+<figure>
+    <img src="./img/cgroup_jerar.png" width="700" />
+    <figcaption>Ejemplo de jerarquía de grupos de control.</figcaption>
+</figure>
+
+Cada grupo se añade creando un nuevo directorio dentro de la carpeta raíz `/sys/fs/cgroup`. En el momento de crear dicha carpeta, el sistema añade los archivos necesarios para gestionar los _cgroups_.
+
+??? note "¿Cómo añadimos los grupos de control de este ejemplo?"
+    Los subsistemas del siguiente ejemplo se añadirían creando en primer lugar cada _cgroup_ y más tarde escribiendo en los subsistemas en los archivos autogenerados:
+
+    ```bash
+    mkdir /sys/fs/cgroup/Cgroup_1
+    mkdir /sys/fs/cgroup/Cgroup_2
+    mkdir /sys/fs/cgroup/Cgroup_2.1
+    mkdir /sys/fs/cgroup/Cgroup_2.2
+
+    echo "+memory +io" > /sys/fs/cgroup/Group_1/cgroup.subtree_control
+    echo "+memory +pids" > /sys/fs/cgroup/Group_2/cgroup.subtree_control
+    echo "+io" > /sys/fs/cgroup/Group_2.1/cgroup.subtree_control
+    echo "-pids" > /sys/fs/cgroup/Group_2.2/cgroup.subtree_control
+    ```
+
+
+#### Union Filesystem
+
+Los sistemas de archivos por capas permiten compartir archivos en el disco, lo que supone un ahorro de espacio.
+
+!!! note "Definición"
+    Los **Union Filesystem** son un tipo de sistema de archivos por capas. Permite a los archivos y directorios de sistemas de archivos distintos estar **superpuestos formando un único sistema de archivos**.
+
+##### OverlayFS
+
+Docker, actualmente, utiliza un tipo de Union Filesystem llamado Overlay2. Esta tecnología utiliza tres capas:
+
+1. **Base** (sólo lectura): es la capa donde van los archivos base. En terminología de Docker se correspondería con la imagen.
+2. **Overlay**: es la capa donde opera el usuario. En un principio ofrece una vista de la capa base y permite operar sobre ella, aunque los cambios no se guardan en esta capa.
+3. **Diff**: es la capa donde se guardan los cambios realizados en la capa anterior.
+
+Una de las características fundamentales que usan los UnionFS es la **técnica de COW** (_Copy On Write_) que permite **reducir el consumo de copias sin modificar**. Si un fichero existe en la capa **base** y otra capa quiere leerlo, lee el original. Cuando una capa quiera modificar el archivo es cuando debe copiarla y modificarla en la propia capa que la necesite.
+
+<figure>
+    <img src="./img/overlay.png" width="700" />
+    <figcaption>Las tres capas de Overlay2 junto a la técnica COW.</figcaption>
+</figure>
+
+
+#### Capabilities
+
+El usuario con UID 0 es el root y tiene el control completo del sistema. Esto puede traer problemas recurrentes de seguridad (las Jails ya intentaron confinar el root omnipotente). Por eso, las _capabilities_ proponen una solución.
+
+!!! note "Definición"
+    Las **_capabilities_** dividen los permisos que tiene un usuario en varias particiones (cada una de ellas es una _capability_).
+
+Un buen ejemplo de su uso podría ser la posibilidad de permitir a un binario poder crear un _raw socket_ como en el caso de la instrucción `ping` mediante la _capability_ `CAP_NET_RAW` sin necesidad de asignarle el resto de privilegios que ofrece el usuario root.
+
+Existen dos tipos de _capabilities_, unas son las asociadas a procesos y otros asociadas a archivos. Las que están asociadas a archivos se unen con las asociadas a procesos cuando un proceso quiere ejecutar un archivo.
+
+!!! hint ""
+    En la práctica, los contenedores no necesitan todos los privilegios que ofrece el root. Así que, realmente, los usuarios root dentro de los contenedores tienen asignadas algunas _capabilities_ para ofrecer únicamente ciertos permisos y restringir otros potencialmente inseguros**.
+
+#### Pivot_root
+
+En el capítulo *********+OJOOOOOOOOOOO******** ya explicamos la importancia que tuvo `chroot` para aparentar que cambiaba el directorio raíz de un proceso y de sus hijos. El problema que presenta es que no es segura, así que es mejor utiliza la alternativa _pivot\_root_.
+
+La función completa de **pivot_root** es la siguiente:
+
+```bash
+int pivot_root (const char *new_root, const char *put_old);
+```
+
+Pivot_root **mueve el punto de montaje raíz al directorio put_old** haciéndolo inaccesible para el proceso llamador como a todos sus hijos, mientras que convierte a **new_root en el nuevo punto de montaje raíz**.
+
+!!! hint ""
+    Esto soluciona las brechas de seguridad de `chroot` porque se aplica al _mount namespace_, así que está cambiando únicamente en el _namespace_ del contenedor la posibilidad de acceder a la antigua raíz.
+
+
+
+### 2º Container Runtimes
+
+!!! note "¿Qué es un container runtime?"
+    Un _container runtime_ es la herramienta o capa responsable de que el contenedor se ejecute correctamente (sin incluir los procesos que están dentro del contenedor).
+
+Este término puede tener diferentes significados dependiendo del proyecto o comunidad donde se consulte, principalmente debido a que el rango de tareas que realiza un _runtime_ no está plenamente definido. En este documento vamos a **separar los _container runtimes_ según las tareas que realicen** en _low-level_ y _high-level_.
+
+Algunos ejemplos de **low-level** pueden ser **runc, crun, gvisor o kata-runtime**, mientras que entre los ejemplos de **high-level** podemos encontrarnos con **containerd o CRI-O**.
+
+??? info "¿Y Docker? ¿Dónde lo metemos?"
+    En muchas referencias se trata a Docker como un _container runtime_ (refiriéndose a Docker con su significado de _daemon_ más su CLI). Llegados a este punto podemos entender perfectamente que se puede considerar de esta forma, ya que su función es gestionar los contenedores y las imágenes (definición de _high-level container runtime_). Sin embargo, en este documento se va a colocar en un escalón superior, en los _container engines_.
+
+    Esta decisión se ha tomado en base a dos razones: la primera es que una de las características principales que hacen a esta herramienta más popular que containerd o CRI-O entre los usuarios es su capacidad de facilitar la comunicación con el usuario. La segunda razón es que delega gran parte del trabajo en otro _high-level runtime_, que por defecto es containerd. Dicho esto, reiteramos que **podría ser perfectamente considerado un _container runtime_**.
+
+    De la misma forma, CRI-O o containerd se podrían llegar a considerar _container engines_ si se utilizan a través de plugins CLI que permitan al usuario interactuar debidamente.
+
+    **En resumen, la forma de referirse a estas tecnologías no es universal y, como hemos dicho, dependiendo de la comunidad y el proyecto, las etiquetas pueden cambiar**.
+
+    Una forma de entender gráficamente el porqué de que estos términos sean tan ambiguos se puede observar en la siguiente figura, que muestra de forma muy general y subjetiva el nivel al que operan algunos ejemplos de _container runtimes_.
+
+
+    <figure>
+        <img src="./img/runtimes.png" width="700" />
+        <figcaption>Nivel al que opera cada container runtime</figcaption>
+    </figure>
+
+#### Low-level container runtimes
+
+En esta página nos referiremos a los **_low-level runtimes_** para hablar de las capas que proporcionan las utilidades básicas como crear _namespaces_ y comenzar el proceso de encapsular una aplicación en un contenedor, es decir a las herramientas que se **comunican directamente con el kernel**.
+
+##### runc
+
+!!! note "Definición"
+    Runc es un CLI que se encarga de crear contenedores y ejecutarlos según la especificación que se le proporcione. Esta especificación sigue el estándar OCI.
+
+La razón de que sea un _low-level container runtime_ cuando realmente sólo es un CLI es que antiguamente Docker utilizaba como _container runtime_ LXC. Esto cambió más adelante y comenzó a crear junto con Google una librería propia que sustituyera a LXC: **_libcontainer_**. Hoy en día, runc utiliza _libcontainer_, de hecho es su pieza básica y fundamental, por eso se pueden considerar que ambos son la misma capa.
+
+??? info "¿Qué estándar OCI?"
+    Los estándares OCI se introdujeron en ******OJOOOOOOOOO********* indicando la existencia de dos estándares: de imágen y _runtime_. Runc sólo implementa la segunda especificación ya que no entiende de imágenes, sino de _bundles_.
+
+    Un _bundle_ es un **conjunto de archivos que contiene todos los datos necesarios** para que un _runtime_ pueda realizar todas las operaciones necesarias para **crear y ejecutar un contenedor**.
+
