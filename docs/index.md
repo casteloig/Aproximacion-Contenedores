@@ -406,9 +406,9 @@ Algunos ejemplos de **low-level** pueden ser **runc, crun, gvisor o kata-runtime
 
 #### Low-level container runtimes
 
-En esta página nos referiremos a los **_low-level runtimes_** para hablar de las capas que proporcionan las utilidades básicas como crear _namespaces_ y comenzar el proceso de encapsular una aplicación en un contenedor, es decir a las herramientas que se **comunican directamente con el kernel**.
+En esta página nos referiremos a los **_low-level runtimes_** a las capas que proporcionan las utilidades básicas como crear _namespaces_ y comenzar el proceso de encapsular una aplicación en un contenedor, es decir a las herramientas que se **comunican directamente con el kernel**.
 
-##### runc
+##### runc (parte del stack de Docker)
 
 !!! note "Definición"
     Runc es un CLI que se encarga de crear contenedores y ejecutarlos según la especificación que se le proporcione. Esta especificación sigue el estándar OCI.
@@ -420,3 +420,190 @@ La razón de que sea un _low-level container runtime_ cuando realmente sólo es 
 
     Un _bundle_ es un **conjunto de archivos que contiene todos los datos necesarios** para que un _runtime_ pueda realizar todas las operaciones necesarias para **crear y ejecutar un contenedor**.
 
+##### crun
+
+Se trata de otro _low-level container runtime_ con funciones similares a runc.
+
+La **diferencia principal** radica en que éste está escrito en C, mientras que runc está escrito en Go. Según el creador de crun, Go es un lenguaje multihilo por defecto, lo que no es recomendable para utilizar en un modelo `fork/exec`.
+
+Además, utiliza los _cgroups v2_, algo que no todas las herramientas de este ámbito soportan.
+
+##### Otros Sandboxed Runtimes
+Las anteriores tecnologías comparten sistema operativo con el host.
+
+Los **Sandboxed runtimes** son otro tipo de herramientas que **aumentan el aislamiento con el host** (aunque disminuyendo la eficiencia), lo que es recomendable en entornos donde varios clientes compartan las mismas máquinas físicas. Esto se logra separando los sistemas operativos del host y de los contenedores.
+
+Algunos ejemplos son **gVisor** (de Google), **Firecracker** (de Amazon) o **Kata** (de OpenStack).
+
+<figure>
+    <img src="./img/sandboxed.png" width="740" />
+    <figcaption>Comparación genérica de Sandboxed Runtime y runc</figcaption>
+</figure>
+
+
+#### High-level container runtime
+En esta página nos referimos a los **_high-level container runtimes_** a las capas que son responsables de la **gestión y transporte de las imágenes** de los contenedores, así como de **desempaquetarlas y enviarlas** a los _low-level container runtimes_ abstrayéndolos de esas actividades.
+
+##### Containerd (parte del stack de Docker)
+Es un **estándar en la industria dada su portabilidad y facilidad de uso**.
+
+Implementa **ambas especificaciones OCI**:
+
+* **Imagen**: es capaz de **desempaquetar imágenes OCI** y de crear bundlesa partir de ellas que el _low-level_ puede entender.
+* **Runtime**: puede comunicarse con un _low-level_ que también implemente el estándar OCI y delegar el trabajo restante en él.
+
+??? note "Tareas principales"
+    1. Hacer pull y push a las imágenes.
+    2. Gestionar el almacenamiento de contenedores.
+    3. Gestionar las redes y sus interfaces.
+    4. Llamar al _low-level container runtime_ con los parámetros deseados.
+
+Cabe destacar que **containerd** es un _daemon_, aunque dispone de varios plugins que aumentan sus funcionalidades en gran medida como una interfaz en línea de comandos.
+
+!!! info "Containerd-shim"
+    Si recordamos las capas que forman el stack de Docker, encontramos una pieza llamada **containerd-shim** que no se corresponde con ningún componente generalizado.
+
+    <figure>
+        <img src="./img/containerd-shim.png" width="650" />
+        <figcaption>Containerd-shim</figcaption>
+    </figure>
+
+    **Containerd-shim** es una implementación que **permite separar a los _low-level container runtimes_ de containerd**
+
+    Cuando containerd quiere crear un contenedor, llama a runc creando una nueva instancia de runc por cada contenedor. Cuando runc termina la tarea de creación se termina a si mismo. A partir de ahora es containerd-shim la pieza que se encarga de tomar las responsabilidades de ser padre del contenedor. 
+
+    <figure>
+        <img src="./img/containerd-shim2.png" width="400" />
+        <figcaption>Containerd-shim después de que runc acabe su tarea</figcaption>
+    </figure>
+
+
+##### CRI-O
+
+!!! info "CRI (Container Runtime Interface)"
+    CRI (_Container Runtime Interface_) es la **API que utiliza Kubernetes para hablar con los _high-level container runtimes_**.
+
+    El proyecto partió del hecho de que Kubernetes es un orquestrador que delega parte del trabajo en los _runtimes_. Si se establece una API (un estándar al fin y al cabo) que describa cómo deben interactuar estas tecnologías con Kubernetes se consigue aumentar en gran medida la interoperabilidad.
+
+    CRI está basado en **gRPC**, que es un tipo de _Remote Procedure Call_ desarrollado por Google que permite intercomunicación entre varios lenguajes.
+
+
+Ahora ya podemos entender mejor qué es CRI-O y por qué se llama así. Su desarrollo lo llevó Red Hat con el objetivo de crear un _runtime_ que soportara de forma nativa la **comunicación mediante CRI, sirviendo de puente entre Kubernetes y un _low-level container runtime_** compatible con OCI.
+
+??? note "Comparación con containerd"
+    En primer lugar, cabe destacar que existe un plugin de containerd que permite la comunicación con Kubernetes mediante CRI.
+
+    Un [estudio](https://www.scitepress.org/Papers/2020/93404/93404.pdf) encabezado por Lennart Espe en el que evalúa el rendimiento de CRI-O y containerd utilizando como _low-level_ tanto a runc como gVisor muestra que, en cuanto a rendimiento general , CRI-O más runc resulta ser la mejor opción.
+
+Cabe destacar que CRI-O está muy unido a Kubernetes y la gestión de las imágenes es recomendable encomendársela a otro _container runtime_ o _container engine_ como Podman (que es de Red Hat al igual que CRI-O).
+
+
+### 3º Container engines
+El _container engine_ por excelencia es el propio Docker, formado por Docker _daemon_ más sus APIs y CLI:
+
+??? info "Componentes"
+
+    === "**Docker daemon**"
+        Es el servicio que se ejecuta en la parte del _host_ o servidor y escucha peticiones API. Es la herramienta que comienza la creación del contenedor.
+
+
+
+    === "**API REST**"
+        El _deamon_ escicha las peticiones de los clientes a través de esta API.
+
+
+
+    === "**CLI**"
+        Es la forma con la que los usuarios, actuando com clientes, se comunican con el _daemon_ a través de la API.
+
+
+### 4º Otros componentes
+Otros componentes que forman el entorno de los contenedores son las **imágenes** y los **registros**.
+
+!!! note "Imágenes"
+    Una imagen es un **archivo binario inmutable** que contiene el código, librerías, dependencias e información que necesita un _runtime_ para crear un contenedor.
+
+El hecho de que sean archivos inmutables permite que equipos de desarrollo puedan probar software en un **entorno estable y uniforme** ya que **representan un entorno en un momento y condiciones específicas**.
+
+!!! hint ""
+    En el caso particular de Docker existe un archivo llamado `Dockerfile`, que es un fichero de texto que contiene una lista de instrucciones que se van a ejecutar a la hora de crear la imagen, es decir, cuando se ejecute el comando `docker build`.
+
+    El Dockerfile, normalmente, utiliza como base otra imagen anterior y se le añaden nuevas instrucciones, así, una imagen se crea normalmente mediante el apilamiento de varias imágenes base.
+
+
+!!! note "Registros"
+    Un registro es un **sistema o repositorio** que se encarga de **almacenar y distribuir imágenes**.
+
+Existen dos tipos de repositorios:
+
+* **Públicos**: como Docker Hub. Ideal para equipos pequeños o usuarios que buscan una imagen que cumpla una función específica sin importarles demasiado la privacidad y seguridad.
+* **Privados**: sólo se comparten con los usuarios deseados, normalmente, un equipo de trabajo.
+
+En la siguiente imagen podemos ver todos los componentes explicados interactuar entre sí.
+
+
+<figure>
+    <img src="./img/docker_interactua.png" width="770" />
+    <figcaption>Todos los componentes explicados de Docker interactuando entre sí.</figcaption>
+</figure>
+
+
+### 4º Orquestadores
+Administrar un gran número de contenedores es una tarea muy complicada, por eso surgieron ciertas tecnologías que permiten **automatizar el proceso de crear, desplegar y escalar contenedores**. Estas tecnologías son los orquestadores.
+
+Su principal **objetivo** es facilitar la gestión de contenedores localizados en muchos hosts. Esto, además, facilita a los equipos de DevOps integrar sus flujos CI/CD.
+
+??? note "Tareas de los orquestadores"
+    * Configurar y programar contenedores.
+    * Proporcionar el aprovisionamiento y despliegue adecuados de los contenedores.
+    * Asegurar la disponibilidad de los servicios.
+    * Escalar los contenedores.
+    * Controlar los recursos compartidos.
+    * Balancear la carga y el tráfico.
+    * Monitorizar la salud de los contenedores.
+    * Proporcionar seguridad en las interacciones entre los contenedores.
+
+
+#### Kubernetes
+
+Kubernetes es el estándar de facto en la actualidad en cuando a lo que orquestadores se refiere. Es una herramienta **portable** y de **código libre** desarrollado originalmente por Google.
+
+Sus tres principios son ==seguridad, facilidad de uso y extensibilidad==.
+
+Cuando se despliega una instancia de Kubernetes se está creando realmente un _cluster_. Este _cluster_ tiene dos elementos fundamentales: **control plane** y **compute machines** o **nodos**:
+
+??? note "Componentes de un cluster de Kubernetes"
+
+    === "Control Plane"
+        * **API Server**: maneja las peticiones internas y externas. El CLI `kubelet` que se suele usar se conecta a este componente.
+        * **Scheduler**: controla la salud de los _pods_ y puede añadir o quitar alguno.
+        * **Controller Manager**: controla que el _cluster_ funciona correctamente (realmente está formado por varios controladores, cada uno con una función específica).
+        * **etcd**: es una base de datos clave-valor distribuida. Permite almacenar la configuración y el estado de los _clusters_.
+
+
+    === "Nodos"
+        * **Pods**: representa una instancia de una aplicación, se corresponde con un contenedor o varios altamente acoplados.
+        * **Container runtime/engine**: se pueden utilizar varios como containerd, CRI-O o Docker.
+        * **Kubelet**: es la aplicación que controla a los contenedores de un mismo _pod_.
+        * **Proxy**: facilita los servicios de red.
+
+
+??? info "Docker-shim"
+
+    Habíamos dicho que Kubernetes utiliza un CRI para comunicarse con los _container engines_ y _container runtimes_. Como Docker no implementa CRI, la comunidad de Kubernetes creó una herramienta que permite comunicarse con Docker a través de CRI.
+
+    Sin embargo, en el año 2020 la comunidad de Kubernetes anunción que no va a seguir manteniendo este plugin, así que el uso de Kubernetes más Docker tiene un futuro incierto.
+
+    <figure>
+        <img src="./img/docker-shim.png" width="770" />
+        <figcaption>Docker-shim haciendo de puente entre Kubernetes y Docker.</figcaption>
+    </figure>
+
+
+##### Kubernetes y sus Container runtimes
+Como hemos visto hasta ahora existen **muchas opciones** a la hora de elegir **container runtime** para Kubernetes. Cada opción tiene sus pros y sus contras en la práctica, sin embargo, si analizamos las capas que estaríamos añadiendo en cada opción hay ciertas diferencias que merece la pena destacar.
+
+<figure>
+    <img src="./img/k8s_runtimes.png" width="800" />
+    <figcaption>Todos los componentes explicados de Docker interactuando entre sí.</figcaption>
+</figure>

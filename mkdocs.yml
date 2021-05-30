@@ -12,4 +12,5 @@ markdown_extensions:
     - pymdownx.superfences
     - pymdownx.tabbed
     - pymdownx.details
+    - pymdownx.mark
     - attr_list
