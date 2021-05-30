@@ -1,14 +1,14 @@
 # Una aproximación a los contenedores
 ## ¿Qué es un contenedor?
-La virtualización es un proceso mediante el cual un software es usado para crear una abstracción sobre unos recursos, dando la sensación de que los elementos hardware se dividen en varias computadores virtuales.
+La **virtualización** es un proceso mediante el cual un software es usado para crear una **abstracción sobre unos recursos**, dando la sensación de que los **elementos hardware se dividen en varias computadores virtuales**.
 
 Existen dos tipos técnicas principales de virtualización:
 
-1. Máquinas virtuales.
-2. Contenedores (virtualización ligera).
+1. **Máquinas virtuales**.
+2. **Contenedores** (virtualización ligera).
 
 !!! note "Definición"
-    Un **contenedor** es un límite lógico que se crea dentro de un sistema operativo proporcionado por el aislamiento de recursos hardware.
+    Un **contenedor** es un **límite lógico** que se crea dentro de un sistema operativo proporcionado por el aislamiento de recursos hardware.
 
     La característica principal es que en esta técnica se utilizan herramientas que proporciona el Linux Kernel (como _cgroups_ y _namespaces_).
 
@@ -30,8 +30,8 @@ Existen dos tipos técnicas principales de virtualización:
     === "Usos principales"
 
         * **Microservicios**: los contenedores **son ligeros y envuelven servicios muy pequeños**, lo que los hace muy aptos para su uso en microservicios.
-        * **DevOps + CI/CD**: facilita el ciclo _"build, test and deploy".
-        * **Cloud**: los contenedores pueden **funcionar** de forma consistente en prácticamente **cualquier lugar**.
+        * **DevOps + CI/CD**: facilita el ciclo "_build, test and deploy_".
+        * **Cloud**: los contenedores pueden funcionar de forma consistente en prácticamente **cualquier lugar**.
 
     === "Ventajas principales"
 
@@ -56,7 +56,7 @@ El principal **problema** de `chroot` es que los procesos con permisos de root s
 ### FreeBSD Jails (2000)
 Fue el **primer "pseudo-contenedor"** y el impulsor de las tecnologías de los contenedores que existen hoy en día.
 
-Su objetivo era **"confinar el root omnipotente"**, que da nombre al documento donde se presenta la herramienta.
+Su objetivo era **"confinar el root omnipotente"**, que da nombre al [documento](http://www.sane.nl/events/sane2000/papers/kamp.pdf) donde se presenta la herramienta.
 
 Las Jails dan uso a `chroot` añadiendo nuevos mecanismos existentes en el sistema operativo. En cada _jail_ los procesos pueden **manipular únicamente los servicios y archivos a los que se le da acceso** (por ello se le dio el nombre de _jail_: cárcel en inglés, como si los procesos estuvieran en prisión). El administrador del sistema puede separar el sistema en varias celdas asignando un superusuario a cada una **sin perder el control** del sistema completo.
 
@@ -79,9 +79,9 @@ Existen dos tipos de _zones_:
 Algo a tener en cuenta es que las Zones se preocupan por **mantener ciertas utilidades** sin dejar a un lado la seguridad (por ejemplo, permite utilizar el comando `ping` a diferencia de las _jails_).
 
 ### Cgroups y Namespaces (2006-2007)
-En el 2006 se propuso un _framework_ que **agrupa procesos** y aprovecha los mecanismos de control existentes del _kernel_. El objetivo era que los **usuarios se centren en el controlador de recursos** y se abstraigan de cómo los procesos son gestionados y monitorizados.
+En el 2006 se propuso un _framework_ que **agrupa procesos** y aprovecha los mecanismos de control existentes del _kernel_. El objetivo es que los **usuarios se centren en el controlador de recursos** y se abstraigan de cómo los procesos son gestionados y monitorizados.
 
-Este mecanismo en un principio se llamaba _process containers_ pero se cambió el nombre a **_cgroups_** para diferenciarlo de los contenedores que conocemos hoy en día.
+Este mecanismo en un principio se llamaba _process containers_ pero se cambió el nombre a **_cgroups_** para diferenciarlo de los contenedores que conocemos hoy en día, que usan otros mecanismos a parte de los _cgroups_.
 
 Por otro lado, en el 2002 se creó el primer **_namespace_**, el _mount namespace_. Aunque fue más adelante a partir del año 2007 cuando se comenzó a ver el potencial que podían tener junto a otras funcionalidades como los _cgroups_, así que se empezaron a desarrollar nuevos _namespaces_. En la actualidad existen ocho.
 
@@ -91,26 +91,26 @@ Los LXC se podrían considerar los primeros contenedores tal y como conocemos el
 Permite al usuario comunicarse con las facilidades que ofrecen las funcionalidades del _kernel_ mediante una **interfaz en línea de comandos**. Sin embargo, no es una herramienta apropiada para realizar tareas de gestión de contenedores en un alto nivel.
 
 ### LMCTFY y Docker (2013)
-**LMCTFY** (Let Me Containerize That For You) fue la versión open-source del **stack de Google** a los contenedores de Linux. Su desarrollo **finalizó en 2015** y Google comenzó a transferir parte de la implementación a _libcontainer_ ahora mismo es una parte fundamental del stack de Docker y forma parte de OCI.
+**LMCTFY** (_Let Me Containerize That For You_) fue la versión open-source del **stack de Google** a los contenedores de Linux. Su desarrollo **finalizó en 2015** y Google comenzó a transferir parte de la implementación a _libcontainer_ ahora mismo es una parte fundamental del stack de Docker y forma parte de OCI.
 
 Por otro lado, **Docker** supuso un despunte en la popularidad de los contenedores en el año de su salida y el crecimiento de ambos conceptos han ido de la mano desde entonces siendo **hoy en día líder en este ámbito**.
 
 En sus inicios utilizaba LXC, pero más tarde lo sustituyó por su propia librería _libcontainer_.
 
 ### OCI (2015)
-**OCI** (Open Container Initiative) es un proyecto de la Linux Foundation cuyo objetivo es **diseñar un estándar abierto para la virtualización basada en contenedores**. Fue establecida en 2015 por Docker y otros líderes de la industria.
+**OCI** (_Open Container Initiative_) es un proyecto de la Linux Foundation cuyo objetivo es **diseñar un estándar abierto para la virtualización basada en contenedores**. Fue establecida en 2015 por Docker y otros líderes de la industria.
 
 Después del lanzamiento de Docker, surgió una comunidad alrededor de los contenedores. Sin embargo, con el paso del tiempo fueron apareciendo nuevas tecnologías y herramientas que satisfacían las neceseidades que iban surgiendo. Este fue el motivo principal por el que surgió este estándar.
 
-Actualmente, OCI define dos especificaciones, aunque [hablaremos más tarde de ellas en este documento](#chroot-1979) *******CAMBIAAAAAAAAAR LIIIIINK********
+Actualmente, OCI define dos especificaciones, aunque [hablaremos más tarde de ellas en este documento](#runc-parte-del-stack-de-docker).
 
 ### Otras tecnologías
 A lo largo de las dos últimas décadas han ido surgiendo otras tecnologías de virtualización de sistema operativo, pero han sido menos importantes para el ecosistema de los contenedores que las anteriormente mencionadas.
 
-Entre ellas podemos encontrar **Linux VServer** (2001), **OpenVZ** (2005), **Warden** (2011), **Singularity** (2015) o **Podman** (2018).
+Entre ellas podemos encontrar a **Linux VServer** (2001), **OpenVZ** (2005), **Warden** (2011), **Singularity** (2015) o **Podman** (2018).
 
 ## Arquitectura de los contenedores
-Dada la ambigüedad con la que muchos profesionales se refieren a cada una de las capas que forman esta arquitectura y, dado que dependiendo de la tecnología a usar, pueden cambiar ligeramente las funciones que realizan sus componentes, se utilizará como referencia el stack de Docker.
+Dada la ambigüedad con la que muchos profesionales se refieren a cada una de las capas que forman esta arquitectura y, dado que, dependiendo de la tecnología a usar, pueden cambiar ligeramente las funciones que realizan sus componentes, se utilizará como referencia el stack de Docker.
 
 
 <figure>
@@ -138,7 +138,7 @@ La API del kernel que facilita esta característica tiene tres llamadas principa
 | `setns`    | Mueve el hilo actual dentro de un _namespace_ existente |
 | `ioctl` | Ofrece información sobre _namespaces_  (la información se maneja desde `/proc/$PID/ns`)|
 
-En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona **distinto tipo de aislamiento**:
+En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona un **distinto tipo de aislamiento**:
 
 
 
@@ -199,7 +199,7 @@ En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona
 
         <figure>
             <img src="./img/pid_ns.png" width="500" />
-            <figcaption>Ejemplo generalizado de bridge</figcaption>
+            <figcaption>Distintos árboles para distintos _namespaces_.</figcaption>
         </figure>
 
         El primer PID dentro del nuevo _namespace_ siempre es el 1. Este proceso debería tener unas características únicas para poder funcionar como _init_ y así poder tener más de un proceso en un contenedor.
@@ -221,7 +221,7 @@ En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona
 
         <figure>
             <img src="./img/net_ns.png" width="500" />
-            <figcaption>Diferencia infraestructura: VM y contenedor</figcaption>
+            <figcaption>Ejemplo generalizado de bridge.</figcaption>
         </figure>
 
         La _flag_ correspondiente es `CLONE_NEWNET`.
@@ -235,7 +235,7 @@ En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona
 
         Antes de que existiera este _namespace_ si un proceso tenía permisos de root en cualquier entorno de aislamiento, también lo tenía en el sistema global, lo que era un problema muy grande en lo que a la seguridad se refiere.
 
-        El UID dentro del _namespace_ siempre se corresponderá con otro fuera de él en el host. Este mapeo se puede hacer manualmente y elegir qué UID se selecciona dentro del contenedor para un usuario global.
+        En este _namespace_ el UID dentro del _namespace_ siempre se corresponderá con otro fuera de él en el host. Este mapeo se puede hacer manualmente y elegir qué UID se selecciona dentro del contenedor para un usuario global.
 
         Un ejemplo de mapeo entre las dos tablas de usuarios se puede observar en la siguiente imagen.
 
@@ -250,7 +250,7 @@ En la actualidad existen 8 _namespaces_ distintos, cada uno de ellos proporciona
     
     === "Cgroup NS"
 
-        Los _cgroups_ (rupos de control en español) son una funcionalidad del kernel de Linux que trataremos en la sección ********************OJOOOOOOOOOOOOOO************* que, básicamente, implementan monitorización y limitación de los recursos que consume un grupo de procesos.
+        Los _cgroups_ (rupos de control en español) son una funcionalidad del kernel de Linux que trataremos en la [sección](#control-groups) que, básicamente, implementan monitorización y limitación de los recursos que consume un grupo de procesos.
 
         !!! note "Función"
             **Virtualiza la vista de los grupos de control** que ven los procesos. Sin esta restricción, un proceso podría observar los grupos de control globales y acceder a la información sobre la limitación de recursos de otros procesos.
@@ -289,8 +289,8 @@ Antes de que se crearan los grupos de control existían formas para **monitoriza
 Los grupos de control ofrecen cuatro características principales:
 
 1. **Limitación de recursos**, como procesador, memoria, dispositivos E/S, etc.
-2. **Priorización**, que es parecida a la anterior característica, pero no limita recursos a procesos sino que le da preferencia de consumo de recursos a un proceso seleccionado.
-3. **Monitorización** de un grupo de procesos para obtener inforamción de qué procesos están consumiendo cuántos recursos.
+2. **Priorización**, que es parecida a la anterior característica, pero no limita recursos a procesos sino que le da preferencia en el consumo de recursos a un proceso seleccionado.
+3. **Monitorización** de un grupo de procesos para obtener información de qué procesos están consumiendo cuántos recursos.
 3. **Freezing de procesos**. Esta es una herramienta que permite paralizar y retomar grupos de procesos. Es muy utilizada en el procesamiento por lotes.
 
 Existen dos versiones de **Cgroups**, hoy en día se está intentando hacer la transición en la mayoría de herramientas a la segunda versión. Para comprender esta última versión necesitamos entender tres conceptos:
@@ -359,11 +359,11 @@ Un buen ejemplo de su uso podría ser la posibilidad de permitir a un binario po
 Existen dos tipos de _capabilities_, unas son las asociadas a procesos y otros asociadas a archivos. Las que están asociadas a archivos se unen con las asociadas a procesos cuando un proceso quiere ejecutar un archivo.
 
 !!! hint ""
-    En la práctica, los contenedores no necesitan todos los privilegios que ofrece el root. Así que, realmente, los usuarios root dentro de los contenedores tienen asignadas algunas _capabilities_ para ofrecer únicamente ciertos permisos y restringir otros potencialmente inseguros**.
+    En la práctica, los contenedores no necesitan todos los privilegios que ofrece el root. Así que, realmente, los usuarios root dentro de los contenedores tienen asignadas algunas _capabilities_ para **ofrecer únicamente ciertos permisos y restringir otros potencialmente inseguros**.
 
 #### Pivot_root
 
-En el capítulo *********+OJOOOOOOOOOOO******** ya explicamos la importancia que tuvo `chroot` para aparentar que cambiaba el directorio raíz de un proceso y de sus hijos. El problema que presenta es que no es segura, así que es mejor utiliza la alternativa _pivot\_root_.
+En la sección [Historia de los contenedores](#chroot-1979) ya explicamos la importancia que tuvo `chroot` para aparentar que cambiaba el directorio raíz de un proceso y de sus hijos. El problema que presenta es que no es segura, así que es mejor utilizar la alternativa _pivot\_root_.
 
 La función completa de **pivot_root** es la siguiente:
 
@@ -388,7 +388,7 @@ Este término puede tener diferentes significados dependiendo del proyecto o com
 Algunos ejemplos de **low-level** pueden ser **runc, crun, gvisor o kata-runtime**, mientras que entre los ejemplos de **high-level** podemos encontrarnos con **containerd o CRI-O**.
 
 ??? info "¿Y Docker? ¿Dónde lo metemos?"
-    En muchas referencias se trata a Docker como un _container runtime_ (refiriéndose a Docker con su significado de _daemon_ más su CLI). Llegados a este punto podemos entender perfectamente que se puede considerar de esta forma, ya que su función es gestionar los contenedores y las imágenes (definición de _high-level container runtime_). Sin embargo, en este documento se va a colocar en un escalón superior, en los _container engines_.
+    En muchas referencias se trata a Docker como un _container runtime_ (refiriéndose a Docker por su significado de _daemon_ más su CLI). Llegados a este punto podemos entender perfectamente que se puede considerar de esta forma, ya que su función es gestionar los contenedores y las imágenes (definición de _high-level container runtime_). Sin embargo, en este documento se va a colocar en un escalón superior, en los _container engines_.
 
     Esta decisión se ha tomado en base a dos razones: la primera es que una de las características principales que hacen a esta herramienta más popular que containerd o CRI-O entre los usuarios es su capacidad de facilitar la comunicación con el usuario. La segunda razón es que delega gran parte del trabajo en otro _high-level runtime_, que por defecto es containerd. Dicho esto, reiteramos que **podría ser perfectamente considerado un _container runtime_**.
 
@@ -416,7 +416,12 @@ En esta página nos referiremos a los **_low-level runtimes_** a las capas que p
 La razón de que sea un _low-level container runtime_ cuando realmente sólo es un CLI es que antiguamente Docker utilizaba como _container runtime_ LXC. Esto cambió más adelante y comenzó a crear junto con Google una librería propia que sustituyera a LXC: **_libcontainer_**. Hoy en día, runc utiliza _libcontainer_, de hecho es su pieza básica y fundamental, por eso se pueden considerar que ambos son la misma capa.
 
 ??? info "¿Qué estándar OCI?"
-    Los estándares OCI se introdujeron en ******OJOOOOOOOOO********* indicando la existencia de dos estándares: de imágen y _runtime_. Runc sólo implementa la segunda especificación ya que no entiende de imágenes, sino de _bundles_.
+    Los estándares OCI se introdujeron en la sección [Historia de los contenedores](#OCI-2015). Consta de dos especificaciones:
+
+    * **Imagen**: define el formato del archivo de las imágenes OCI. El objetivo es permitir una serie de herramientas estandarizadas que puedan preparar, construir y transportar una imagen.
+    * **_Runtime_**: define la configuración, entorno de ejecución y ciclo de vida de un contenedor.
+    
+    Runc sólo implementa la segunda especificación ya que no entiende de imágenes, sino de _bundles_.
 
     Un _bundle_ es un **conjunto de archivos que contiene todos los datos necesarios** para que un _runtime_ pueda realizar todas las operaciones necesarias para **crear y ejecutar un contenedor**.
 
@@ -449,7 +454,7 @@ Es un **estándar en la industria dada su portabilidad y facilidad de uso**.
 
 Implementa **ambas especificaciones OCI**:
 
-* **Imagen**: es capaz de **desempaquetar imágenes OCI** y de crear bundlesa partir de ellas que el _low-level_ puede entender.
+* **Imagen**: es capaz de **desempaquetar imágenes OCI** y de crear _bundles_ a partir de ellas que el _low-level_ puede entender.
 * **Runtime**: puede comunicarse con un _low-level_ que también implemente el estándar OCI y delegar el trabajo restante en él.
 
 ??? note "Tareas principales"
@@ -514,7 +519,7 @@ El _container engine_ por excelencia es el propio Docker, formado por Docker _da
 
 
     === "**CLI**"
-        Es la forma con la que los usuarios, actuando com clientes, se comunican con el _daemon_ a través de la API.
+        Es la forma con la que los usuarios, actuando como clientes, se comunican con el _daemon_ a través de la API.
 
 
 ### 4º Otros componentes
@@ -528,7 +533,7 @@ El hecho de que sean archivos inmutables permite que equipos de desarrollo pueda
 !!! hint ""
     En el caso particular de Docker existe un archivo llamado `Dockerfile`, que es un fichero de texto que contiene una lista de instrucciones que se van a ejecutar a la hora de crear la imagen, es decir, cuando se ejecute el comando `docker build`.
 
-    El Dockerfile, normalmente, utiliza como base otra imagen anterior y se le añaden nuevas instrucciones, así, una imagen se crea normalmente mediante el apilamiento de varias imágenes base.
+    El Dockerfile, habitualmente, utiliza como base otra imagen anterior y se le añaden nuevas instrucciones, así, una imagen se crea normalmente mediante el apilamiento de varias imágenes base.
 
 
 !!! note "Registros"
@@ -607,3 +612,9 @@ Como hemos visto hasta ahora existen **muchas opciones** a la hora de elegir **c
     <img src="./img/k8s_runtimes.png" width="800" />
     <figcaption>Todos los componentes explicados de Docker interactuando entre sí.</figcaption>
 </figure>
+
+Como se puede comprobar en la última imagen, dependiendo de la opción que escojamos, vamos a encontrarnos más componentes o menos en el stack. Esto no quiere decir que los stacks con menos saltos sean más eficientes: cada alternativa tiene sus pros y sus contras que habría que estudiar con mayor detenimiento.
+
+
+# AMPLIACIÓN DE CONTENIDOS
+Los contenidos explicados en esta pagina han sido obtenidos íntegramente de *********ENLACE A LA MEMORIA EN GITHUB*********
