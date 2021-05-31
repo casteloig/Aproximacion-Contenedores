@@ -1,6 +1,6 @@
 site_name: CONTENEDORES
 nav:
-    - Home: index.md
+    - Aproximación a los contenedores: index.md
     - Tutorial Go: tutoriales/contenedorgo.md
     - Tutorial Bash: tutoriales/contenedorbash.md
 theme: material
