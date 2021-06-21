@@ -609,7 +609,7 @@ Como se puede comprobar en la última imagen, dependiendo de la opción que esco
 
 
 # AMPLIACIÓN DE CONTENIDOS
-Los contenidos explicados en esta pagina han sido obtenidos íntegramente de *********ENLACE A LA MEMORIA EN GITHUB*********
+Los contenidos explicados en esta pagina han sido obtenidos íntegramente de la memoria del TFG "Una aproximación "down-top" a los contenedores" por Ignacio Castelo González en la Universidad de Santiago de Composetela.
 
 
 
