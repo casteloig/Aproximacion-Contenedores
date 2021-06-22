@@ -10,7 +10,7 @@ En el siguiente ejemplo se creará lo mismo que en el tutorial de Go pero en tan
 
 Para el caso de los namespaces simplemente necesitamos utilizar la orden [`unshare`](https://man7.org/linux/man-pages/man1/unshare.1.html): en este caso crearemos los correspondientes a `--mount`, `--pid`, `--uts` y `--user`.
 
-Además, vamos a especificar con `--fork` que la terminal que va a abrir el programa sea un hijo del proceso `unshare` (es útil precisamente porque hemos creado un nuevo _Namespace PID_). Con `--map-root-user` ahorramos todas las líneas que escribíamos en Go para hacer que el usuario del nuevo _Namespace USER_ sea root. Por último, podemos ahorrar realizar el `pivot_root` del que ya hemos hablado anteriormente con la opción `root=[dirección]`.
+Además, vamos a especificar con `--fork` que la terminal que va a abrir el programa sea un hijo del proceso `unshare` (es útil precisamente porque hemos creado un nuevo _Namespace PID_). Con `--map-root-user` ahorramos todas las líneas que escribíamos en Go para hacer que el usuario del nuevo _Namespace USER_ sea root. Por último, podemos ahorrar realizar el `pivot_root` del que ya hemos hablado en el otro tutorial con la opción `root=[dirección]`. Para realizar este paso necesitamos descargar el mismo [mini-root](https://alpinelinux.org/downloads/) de Alpine que utilizabamos en el tutorial de Go.
 
 Por otro lado, es importante acordarse de montar el nuevo _pseudo-filesystem_ de `/proc`.
 
